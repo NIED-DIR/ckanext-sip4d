@@ -1,0 +1,99 @@
+{% ckan_extends %}
+
+{% set title = package.title or package.name %}
+{% set notes = h.markdown_extract(package.notes, extract_length=180) %}
+{% set image_dict = h.get_resource_thumbnail_url(package.resources) %}
+{#
+  著作者　情報日時
+　　author　information_date
+#}
+{% set author =　package.author %}
+{% set information_date =　h.get_pkg_dict_extra(package, 'information_date', '') %}
+{% set locale_date = h.get_localedatetime(information_date) %}
+
+{% block heading %}
+  <div class="package-item-title">
+  <h2 class="dataset-heading">
+    {% block heading_private %}
+      {% if package.private %}
+        <span class="dataset-private label label-inverse">
+            <i class="fa fa-lock"></i>
+            {{ _('Private') }}
+        </span>
+      {% endif %}
+    {% endblock %}
+    {% block heading_title %}
+      {% if package.type == 'dataset' %}
+        {{ h.link_to(title|truncate(80), h.url_for('%s.read' % package.type, id=package.name)) }}
+      {% else %}
+        {{ title }}*{{ _('Details of this data set cannot be displayed.') }}
+      {% endif %}
+    {% endblock %}
+    {% block heading_meta %}
+      {% if package.get('state', '').startswith('draft') %}
+        <span class="label label-info">{{ _('Draft') }}</span>
+      {% elif package.get('state', '').startswith('deleted') %}
+        <span class="label label-danger">{{ _('Deleted') }}</span>
+      {% endif %}
+      {{ h.popular('recent views', package.tracking_summary.recent, min=10) if package.tracking_summary }}
+    {% endblock %}
+  </h2>
+  {% if author %}
+    <h2 class="dataset-heading dataset-indent">
+      <span class="package-item-title-span">{{ _('Author') }}:</span>
+      {{ author }}
+    </h2>
+  {% endif %}
+  {% if information_date %}
+    <h2 class="dataset-heading dataset-indent">
+      <span class="package-item-title-span">{{ _('Information Date') }}:</span>
+      {{ h.render_datetime_sip4d(locale_date,h.lang()) }}
+    </h2>
+  {% endif %}
+  </div>
+{% endblock %}
+
+{% block notes %}
+    {% if image_dict %}
+      {% set image_width  = image_dict['width'] %}
+      {% set image_height = image_dict['height'] %}
+      {% set image_url    = image_dict['url'] %}
+      <div style="display:flex">
+        {% if notes %}
+          <div style="width: calc(100% - {{ image_width }});">{{ notes|urlize }}</div>
+        {% else %}
+          <div class="empty" style="width: calc(100% - {{ image_width }});">{{ _("This dataset has no description") }}</div>
+        {% endif %}
+        <div style="width:{{ image_width }};">
+          {% set con_type = 'dataset' if h.ckan_version().split('.')[1] | int >= 9 else 'package' %}
+          <a href="{{ h.url_for(controller=con_type, action='read', id=package.name) }}">
+          <img class="dataset-list-thumbnail" src="{{ image_url }}"
+               style="padding:0px 0px 0px 10px;max-width:{{ image_width }}; max-height:{{ image_height }};"
+               onerror="this.style.display='none'">
+          </a>
+        </div>
+      </div>
+    {% else %}
+      {% if notes %}
+        <div>{{ notes|urlize }}</div>
+      {% else %}
+        <div class="empty">{{ _("This dataset has no description") }}</div>
+      {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block resources %}
+        {% if package.tags %}
+          {% block resources_outer %}
+            <ul class="dataset-resources list-unstyled">
+              {% block resources_inner %}
+                {% for tag in package.tags %}
+                <li>
+                  <a class="label label-default" >{{ tag.name }}</a>
+                </li>
+                {% endfor %}
+              {% endblock %}
+            </ul>
+          {% endblock %}
+        {% endif %}
+{% endblock %}

@@ -1,0 +1,1 @@
+from ckan.plugins.interfaces import Interface

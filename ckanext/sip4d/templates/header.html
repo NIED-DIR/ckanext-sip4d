@@ -1,0 +1,34 @@
+{% ckan_extends %}
+
+{% block header_logo %}
+  {% set main_css = g.main_css %}
+
+  {% set logo_path = h.get_sip4d_logo_path() %}
+  <a class="logo" href="{{ h.url_for('home') }}">
+  {% set home_url = h.url_for('home') %}
+  {% set locale_request_url = h.url_for(request.path, locale=h.lang()) %}
+
+  <a class="logo" href="{{ home_url }}">
+  {% if request.path == home_url or locale_request_url == home_url %}
+    <img src="/images/_blank.png" alt="{{ g.site_title }}" title="{{ g.site_title }}" /></a>
+  {% else %}
+    <img src="{{ logo_path }}" width="250px" alt="{{ g.site_title }}" title="{{ g.site_title }}" /></span>
+  {% endif %}
+  </a>
+
+{% endblock %}
+
+{% block header_account_settings_link %}
+
+{% endblock %}
+
+{% block header_site_navigation_tabs %}
+    {{ h.build_sip4d_nav_main(
+      ('dataset.search', _('Datasets')),
+      ('organization.index',_('Organizations')),
+      ('home.about', _('About')) ) }}
+{% endblock %}
+
+{% block header_site_search %}
+
+{% endblock %}

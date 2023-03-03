@@ -1,0 +1,6 @@
+{% ckan_extends %}
+
+{% block package_metadata_fields_custom %}
+  {% snippet 'sip4d/snippets/package_metadata_fields.html', form=form, data=data, errors=errors %}
+  {{ super() }}
+{% endblock %}

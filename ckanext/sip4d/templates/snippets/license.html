@@ -1,0 +1,48 @@
+{% macro license_string(pkg_dict) %}
+  {% set ltitle = pkg_dict.license_title %}
+  {# ライセンスの'ol'はＧ空間情報センターの独自定義　ckan.poファイルで変換するのは文字数が少ないため誤変換のリスクがあるため、ここでハードコーディング（2018/2/28:磯野）#}
+  {% if ltitle == 'ol' %}
+    {% if h.lang() == 'ja' %}
+      {% set ltitle = '独自利用規約' %}
+    {% else %}
+      {% set ltitle = 'Own custom license' %}
+    {% endif %}
+  {% endif %}
+  {% if 'license_url' in pkg_dict %}
+    <a href="{{ pkg_dict.license_url }}" rel="dc:rights">{{ ltitle }}</a>
+  {% else %}
+    <span property="dc:rights">{{ ltitle }}</span>
+  {% endif %}
+{% endmacro %}
+
+{% block license %}
+  {% if text_only %}
+    {% if pkg_dict.license_id %}
+      {{ license_string(pkg_dict) }}
+    {% else %}
+      {{ _('No License Provided') }}
+    {% endif %}
+  {% else %}
+    {% if pkg_dict.license_id %}
+      {% block license_wrapper %}
+        <section class="module module-narrow module-shallow license">
+          {% block license_title %}
+            <h2 class="module-heading"><i class="icon-medium icon-lock"></i> {{ _('License') }}</h2>
+          {% endblock %}
+          {% block license_content %}
+            <p class="module-content">
+              {% block license_content_inner %}
+                {{ license_string(pkg_dict) }}
+                {% if pkg_dict.isopen %}
+                  <a href="http://opendefinition.org/okd/" title="{{ _('This dataset satisfies the Open Definition.') }}">
+                      <img class="open-data" src="{{ h.url_for_static('/base/images/od_80x15_blue.png') }}" alt="[Open Data]" />
+                  </a>
+                {% endif %}
+              {% endblock %}
+            </p>
+          {% endblock %}
+        </section>
+      {% endblock %}
+    {% endif %}
+  {% endif %}
+{% endblock %}

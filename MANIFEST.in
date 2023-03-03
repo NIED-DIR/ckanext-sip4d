@@ -1,0 +1,12 @@
+recursive-include ckanext/sip4d/templates                                           *
+recursive-include ckanext/sip4d/public                                              *
+
+recursive-include ckanext/sip4d/public/js                                           *.js
+recursive-include ckanext/sip4d/public/js                                           *.txt
+recursive-include ckanext/sip4d/public/js                                           *.cfg
+recursive-include ckanext/sip4d/public/js                                           *.gif
+recursive-include ckanext/sip4d/public/js                                           *.png
+recursive-include ckanext/sip4d/public/js                                           *.css
+recursive-include ckanext/sip4d/public/js                                           *.js
+recursive-include ckanext/sip4d/public                                             *.css
+

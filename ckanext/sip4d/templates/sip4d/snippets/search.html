@@ -1,0 +1,26 @@
+<section class="module module-narrow module-shallow">
+<h2 class="module-heading">
+  <i class="fa fa-filter"></i> {{ _('Information Date') }}
+  <a href="{{ h.remove_url_param(['ext_startdate', 'ext_enddate']) }}"
+     class="action">{{ _('Clear') }}</a>
+</h2>
+{% set start_date = h.get_request_param('ext_startdate', '') %}
+{% set end_date = h.get_request_param('ext_enddate', '')  %}
+{% set daterange = h.get_timerange_value(start_date, end_date) %}
+<div class="module-content input-prepend">
+  <span class="add-on"><i class="icon-calendar"></i></span>
+  <input type="text" style="cursor:pointer; width: 150px" readonly id="daterange"
+         data-module="sip4ddaterange_query" data-lang="{{ h.lang() }}" value="{{ daterange }}"/>
+</div>
+{#
+{% set sip4d_authorized = h.check_access('sip4d_issysadmin') %}
+{% if sip4d_authorized  %}
+<div style="text-align: right;padding-right: 10px;">
+  {% set masurl = h.add_url_param('/sip4d/sip4d_update_list_page',None,None,request.params) %}
+  <a href="{{ masurl }}">{{ _('Disaster Info Mass Update') }}</a>
+</div>
+{% endif %}
+#}
+</section>
+{% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
+{% include 'sip4d/snippets/sip4ddaterange_query_' ~ type ~ '.html' %}

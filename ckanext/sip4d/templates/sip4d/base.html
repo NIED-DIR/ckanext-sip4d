@@ -1,0 +1,183 @@
+{% extends 'page.html' %}
+
+{% block title %}{{ _('Disaster Info Mass Update') }} - {{ super() }}{% endblock %}
+
+{% set authorized_user = h.check_access('sip4d_issysadmin') %}
+{% set extstart_date = c.page.startdate %}
+{% set extend_date = c.page.enddate %}
+
+{% block breadcrumb_content %}
+  {% set con_type = 'dataset' if h.ckan_version().split('.')[1] | int >= 9 else 'package' %}
+  <li >{{ h.nav_link(_('Datasets'), controller=con_type, action='search', highlight_actions = 'new index') }}</li>
+  <li class="active"><a href="">{{ _('Disaster Info Mass Update') }}</a></li>
+{% endblock %}
+
+{% block styles %}
+  {{ super() }}
+  <link type="text/css" rel="stylesheet" media="all" href="/css/style.css" />
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+{% endblock %}
+
+{% block secondary_content %}
+  {% block help %}
+  <section class="module module-narrow module-shallow">
+    {% block help_inner %}
+    <h2 class="module-heading">{{ _('Disaster Info Mass Update') }}</h2>
+    <div class="module-content">
+      <p>{% trans %}Select date range and search Datasets.{% endtrans %}</p>
+      <p>{% trans %}Update Disaster_ID and Disaster_Name of checked Datasets.{% endtrans %}</p>
+    </div>
+    {% endblock %}
+  </section>
+  {% endblock %}
+{% endblock %}
+
+{% block page_primary_action %}
+  {% set start_date = h.get_request_param('ext_startdate', '') %}
+  {% set end_date = h.get_request_param('ext_enddate', '')  %}
+  {% set daterange = h.get_timerange_value(start_date, end_date) %}
+  <div class="module-content input-prepend sip4d-searchform-div" >
+    <span class="add-on">{{ _('Date Search') }}</span>
+    <input type="text" style="cursor:pointer; width: 220px" readonly id="daterange_search"
+           data-module="sip4ddaterange_search" data-lang="{{ h.lang() }}" value="{{ daterange }}"/>
+    <a href="{{ h.remove_url_param(['ext_startdate', 'ext_enddate']) }}"
+         class="btn">{{ _('Clear') }}</a>
+    <div>
+      <label class="sip4d-radio-label" for="search_type_information">
+        <input type="radio" name="sip4d_search_type_radio" id="search_type_information" value="information_date" checked="checked"/>{{ _('Information Date') }}</label>
+      <label class="sip4d-radio-label" for="search_type_modified">
+        <input type="radio" name="sip4d_search_type_radio" id="search_type_modified" value="metadata_modified" />{{ _('Last Modified') }}</label>
+      <label class="sip4d-radio-label" for="search_type_created">
+        <input type="radio" name="sip4d_search_type_radio" id="search_type_created" value="metadata_created" />{{ _('Created') }}</label>
+    </div>
+  </div>
+  {% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
+  {% include 'sip4d/snippets/sip4ddaterange_search_' ~ type ~ '.html' %}
+{% block form %}
+  {% set facets = {
+    'fields': c.fields_grouped,
+    'search': c.search_facets,
+    'titles': c.facet_titles,
+    'translated_fields': c.translated_fields,
+    'remove_field': c.remove_field }
+  %}
+
+  {% set sorting = [
+    (_('Relevance'), 'score desc, metadata_modified desc'),
+    (_('Name Ascending'), 'title_string asc'),
+    (_('Name Descending'), 'title_string desc'),
+    (_('Last Modified'), 'metadata_modified desc'),
+    (_('Information Date Ascending'), 'information_date asc'),
+    (_('Information Date Descending'), 'information_date desc'),
+    (_('Popular'), 'views_recent desc') if g.tracking_enabled else (false, false) ]
+  %}
+  {% snippet 'snippets/search_form.html', form_id='sip4d_disaster_search_form', type='dataset', query=c.q, sorting=sorting, sorting_selected=c.order_by, count=c.page.item_count, facets=facets, show_empty=request.params, error=c.query_error %}
+{% endblock %}
+
+{% endblock %}
+
+{% block primary_content_inner %}
+  {% if extstart_date and extend_date %}
+  {% set show_extstart_date = h.render_datetime_sip4d(extstart_date, h.lang()) %}
+  {% set show_extend_date = h.render_datetime_sip4d(extend_date, h.lang()) %}
+    <h2>{{ _('{start} TO {end}').format(start=show_extstart_date, end=show_extend_date) }}</h2>
+  {% endif %}
+  {# <h2>{{ _('{num} datasets found').format(num=c.page.item_count) }}</h2> #}
+
+  <div class="page-limit-div">
+  <span>{{ _('Limit page number') }}</span>
+  {% set limititems = ['20', '100', '500'] %}
+  {% set limitnum = c.rows %}{# h.get_request_param('limit', limititems[0]) #}
+  {% for limititem in limititems %}
+    {% if limititem!=limititems[0] %}
+    |
+    {% endif %}
+    {% if limitnum==limititem %}
+      <span class="page-limit">{{ limititem }}</span>
+    {% else %}
+      <a class="page-limit" href="{{ h.remove_url_param('limit',None, limititem) }}">{{ limititem }}</a>
+    {% endif %}
+  {% endfor %}
+  </div>
+
+  <form class="update-disaster-form" id="update-disaster-form" method="post" onsubmit="return false;">
+    <table class="table table-striped table-bordered table-condensed">
+      <thead>
+        <tr>
+          <th class="sip4ddataset-table-check-header" style="vertical-align: baseline;" rowspan="2">
+            <input type="checkbox" id="all_check"/>
+          </th>
+          <th scope="row" class="sip4ddataset-label-header">{{ _('Title') }}</th>
+          <th scope="row" class="sip4ddataset-label-header">{{ _('Information Date') }}</th>
+        </tr>
+        <tr>
+          <th class="sip4ddataset-details-header">{{ _('Disaster Id') }}</th>
+          <th class="sip4ddataset-details-header">{{ _('Disaster Name') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for item in c.page.items %}
+        {% set itemtitle = item.title %}
+        {% set information_date =　h.get_pkg_dict_extra(item, 'information_date', '') %}
+        {% set locale_date = h.get_localedatetime(information_date) %}
+        {% set disaster_name = h.get_pkg_dict_extra(item, 'disaster_name', '') %}
+        {% set disaster_id = h.get_pkg_dict_extra(item, 'disaster_id', '') %}
+        <tr>
+          <td class="sip4ddataset-table-check" style="vertical-align: baseline;" rowspan="2">
+            <input type="checkbox" name="dataset_ids" value="{{ item.id }}">
+          </td>
+          <th scope="row" class="dataset-label">
+            {{ itemtitle }}
+          </th>
+          <th scope="row" class="dataset-label">
+            {% if locale_date %}
+              <span>{{ h.render_datetime_sip4d(locale_date,h.lang()) }}</span>
+            {% endif %}
+          </th>
+        </tr>
+        <tr>
+          <td class="dataset-details">
+            {% if disaster_id %}
+              {{ disaster_id }}
+            {% else %}
+              <br/>
+            {% endif %}
+          </td>
+          <td class="dataset-details">
+            {% if disaster_name %}
+              {{ disaster_name }}
+            {% else %}
+              <br/>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+        <tr>
+          <td colspan="3" class="disaster-update-td">
+            <input type="text" class="disaster-update-text" name="disaster_id" value="" placeholder="{{ _('New Disaster Id') }}">
+            <button class="btn disaster-update-button" id="disaster_id_update">{{ _('Disaster ID Mass Update') }}</button>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" class="disaster-update-td">
+            <input type="text" class="disaster-update-text" name="disaster_name" value=""  placeholder="{{ _('New Disaster Name') }}">
+            <button class="btn disaster-update-button" id="disaster_name_update">{{ _('Disaster Name Mass Update') }}</button>
+          </td>
+        </tr>
+        <!-- tr>
+          <td colspan="3" class="disaster-update-td">
+            <input type="text" class="disaster-update-text" name="harvest_flag" value=""  placeholder="{{ _('New Harvest Flag') }}">
+            <button class="btn disaster-update-button" id="harvest_flag_update">{{ _('Harvest Flag Mass Update') }}</button>
+          </td>
+        </tr -->
+      </tbody>
+    </table>
+  </form>
+  {% block page_pagination %}
+    {{ c.page.pager(q=c.q) }}
+  {% endblock %}
+
+{% endblock %}

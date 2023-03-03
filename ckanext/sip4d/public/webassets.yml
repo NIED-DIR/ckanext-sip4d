@@ -1,0 +1,76 @@
+sip4d_base_style:
+  filters: cssrewrite
+  output: ckanext-sip4d/%(version)s_sip4d_base_style.css
+  contents:
+    - base.css
+
+sip4d_dataset_range_map_js:
+  filter: rjsmin
+  output: ckanext-sip4d/%(version)s_sip4d_dataset_range_map.js
+  extra:
+    preload:
+      - base/main
+  contents:
+    - js/vendor/leaflet/leaflet.js
+    - js/vendor/leaflet.draw/leaflet.draw.js
+    - js/common_map.js
+    - js/dataset_range_map.js
+
+sip4d_dataset_range_map_css:
+  filters: cssrewrite
+  output: ckanext-sip4d/%(version)s_sip4d_dataset_range_map.css
+  contents:
+    - js/vendor/leaflet/leaflet.css
+    - js/vendor/leaflet.draw/leaflet.draw.css
+    - css/dataset_edit_map.css
+
+sip4ddaterange_query_js:
+  filter: rjsmin
+  output: ckanext-sip4d/%(version)s_sip4ddaterange_query.js
+  extra:
+    preload:
+      - base/main
+  contents:
+    - js/vendor/daterangepicker/moment.js
+    - js/vendor/daterangepicker/daterangepicker.js
+    - js/vendor/daterangepicker/sip4d_daterange_query.js
+
+sip4ddaterange_query_css:
+  filters: cssrewrite
+  output: ckanext-sip4d/%(version)s_sip4ddaterange_query.css
+  contents:
+    - js/vendor/daterangepicker/daterangepicker.css
+
+sip4ddaterange_search_js:
+  filter: rjsmin
+  output: ckanext-sip4d/%(version)s_sip4ddaterange_search.js
+  extra:
+    preload:
+      - base/main
+  contents:
+    - js/vendor/daterangepicker/moment.js
+    - js/vendor/daterangepicker/daterangepicker.js
+    - js/vendor/daterangepicker/sip4d_daterange_search.js
+
+sip4ddaterange_search_css:
+  filters: cssrewrite
+  output: ckanext-sip4d/%(version)s_sip4ddaterange_search.css
+  contents:
+    - js/vendor/daterangepicker/daterangepicker.css
+
+sip4d_datetime_picker_js:
+  filter: rjsmin
+  output: ckanext-sip4d/%(version)s_sip4d_datetime_picker.js
+  extra:
+    preload:
+      - base/main
+  contents:
+    - js/vendor/daterangepicker/moment.js
+    - js/vendor/daterangepicker/daterangepicker.js
+    - js/vendor/daterangepicker/datetime_picker.js
+
+sip4d_datetime_picker_css:
+  filters: cssrewrite
+  output: ckanext-sip4d/%(version)s_sip4d_datetime_picker.css
+  contents:
+    - js/vendor/daterangepicker/daterangepicker.css

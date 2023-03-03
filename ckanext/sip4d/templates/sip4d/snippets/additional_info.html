@@ -1,0 +1,77 @@
+{% set information_date = h.get_pkg_dict_sip4dextra(pkg_dict, 'information_date', '') %}
+{% set disaster_id = h.get_pkg_dict_sip4dextra(pkg_dict, 'disaster_id', '') %}
+{% set disaster_name = h.get_pkg_dict_sip4dextra(pkg_dict, 'disaster_name', '') %}
+{% set language = h.get_pkg_dict_sip4dextra(pkg_dict, 'language', '') %}
+{% set harvest_flag = h.get_pkg_dict_sip4dextra(pkg_dict, 'harvest_flag', '') %}
+{% set author_mailform = h.get_pkg_dict_sip4dextra(pkg_dict, 'author_mailform', '') %}
+{% set maintainer_mailform = h.get_pkg_dict_sip4dextra(pkg_dict, 'maintainer_mailform', '') %}
+{% set credit = h.get_pkg_dict_sip4dextra(pkg_dict, 'credit', '') %}
+{% set testflg = h.get_pkg_dict_sip4dextra(pkg_dict, 'testflg', '') %}
+{% set harvestflg = h.get_pkg_dict_sip4dextra(pkg_dict, 'harvestflg', '') %}
+
+{% set harvest_object_id = h.get_pkg_dict_sip4dextra(pkg_dict, 'harvest_object_id', '') %}
+{% set harvest_source_id = h.get_pkg_dict_sip4dextra(pkg_dict, 'harvest_source_id', '') %}
+{% set harvest_source_title = h.get_pkg_dict_sip4dextra(pkg_dict, 'harvest_source_title', '') %}
+
+{% if information_date %}
+{% set locale_date = h.get_localedatetime(information_date) %}
+<tr>
+  <th scope="row" class="dataset-label">{{ _("Information Date") }}</th>
+  <td class="dataset-details">
+    <span class="automatic-local-datetime" data-datetime="{{ locale_date }}"> </span>
+  </td>
+</tr>
+{% endif %}
+{% if disaster_id %}
+<tr>
+  <th scope="row" class="dataset-label">{{ _("Disaster Id") }}</th>
+  <td class="dataset-details">{{ disaster_id }}</td>
+</tr>
+{% endif %}
+{% if disaster_name %}
+<tr>
+  <th scope="row" class="dataset-label">{{ _("Disaster Name") }}</th>
+  <td class="dataset-details">{{ disaster_name }}</td>
+</tr>
+{% endif %}
+{% if credit %}
+<tr>
+  <th scope="row" class="dataset-label">{{ _("credit") }}</th>
+  <td class="dataset-details">{{ credit }}</td>
+</tr>
+{% endif %}
+{% if testflg %}
+<!--
+<tr>
+  <th scope="row" class="dataset-label">{{ _("Testflag") }}</th>
+  <td class="dataset-details">{{ testflg }}</td>
+</tr>
+-->
+{% endif %}
+{% if harvestflg %}
+<tr>
+  <th scope="row" class="dataset-label">{{ _("Harvest flag") }}</th>
+  <td class="dataset-details">{{ harvestflg }}</td>
+</tr>
+{% endif %}
+
+
+
+{% if author_mailform %}
+<!-- tr>
+  <th scope="row" class="dataset-label">{{ _("Author contact") }}</th>
+  <td class="dataset-details">{{ author_mailform }}</td>
+</tr -->
+{% endif %}
+{% if maintainer_mailform %}
+<!-- tr>
+  <th scope="row" class="dataset-label">{{ _("Maintainer contact") }}</th>
+  <td class="dataset-details">{{ maintainer_mailform }}</td>
+</tr -->
+{% endif %}
+{% if language %}
+<tr>
+  <th scope="row" class="dataset-label">{{ _("Language") }}</th>
+  <td class="dataset-details">{{ language }}</td>
+</tr>
+{% endif %}

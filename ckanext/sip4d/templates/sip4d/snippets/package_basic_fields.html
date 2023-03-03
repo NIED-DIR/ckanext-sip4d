@@ -1,0 +1,40 @@
+{% set author_mailform = h.get_pkg_dict_sip4dextra(data, 'author_mailform', '') %}
+{% set maintainer_mailform = h.get_pkg_dict_sip4dextra(data, 'maintainer_mailform', '') %}
+{{ form.input('author_mailform', label=_('Author contact'), id='field-author_mailform', placeholder='', classes=['control-medium'], value=author_mailform, error=errors.author_mailform) }}
+{{ form.input('maintainer_mailform', label=_('Maintainer contact'), id='field-maintainer_mailform', placeholder='', classes=['control-medium'], value=maintainer_mailform, error=errors.maintainer_mailform) }}
+
+<!-- disaster -->
+<h2>{{ _('Disaster Field') }}</h2>
+{% set information_date = h.get_pkg_dict_sip4dextra(data, 'information_date', '') %}
+{% set locale_date = h.get_localedatetime(information_date) %}
+{# form.input('information_date', label=_('Information Date'), id='field-information_date', placeholder='yyyy-mm-dd HH:MM:SS', value=information_date, error=errors.information_date, classes=['control-medium']) #}
+<div class="control-group control-medium">
+  <label class="control-label" for="field-information_datetime">{{ _('Information Date') }}</label>
+  <div class="controls ">
+    <input type="text" style="cursor:pointer; width: 320px" readonly id="field-information_datetime"
+           name="information_datetime" data-module="sip4d_informationdate_picker" data-lang="{{ h.lang() }}" value="{{ locale_date }}"/>
+  </div>
+</div>
+{% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
+{% include 'sip4d/snippets/sip4d_datetime_picker_' ~ type ~ '.html' %}
+
+{% set disaster_id = h.get_pkg_dict_sip4dextra(data, 'disaster_id', '') %}
+{% set disaster_name = h.get_pkg_dict_sip4dextra(data, 'disaster_name', '') %}
+{% set language = h.get_pkg_dict_sip4dextra(data, 'language', '') %}
+{{ form.input('disaster_id', label=_('Disaster Id'), id='field-disaster_id', placeholder='', classes=['control-medium'], value=disaster_id, error=errors.disaster_id) }}
+{{ form.input('disaster_name', label=_('Disaster Name'), id='field-disaster_name', placeholder='', classes=['control-medium'], value=disaster_name, error=errors.disaster_name) }}
+{{ form.input('language', label=_('Language'), id='field-language', placeholder='ja', classes=['control-medium'], value=language, error=errors.language) }}
+
+<!-- harvest -->
+<h2>{{ _('Harvest Field') }}</h2>
+{% set harvest_flag = h.get_pkg_dict_sip4dextra(data, 'harvest_flag', '') %}
+{{ form.input('harvest_flag', label=_('Harvest Authorization'), id='field-harvest_flag', placeholder=_('harvest key'), classes=['control-medium'], value=harvest_flag, error=errors.harvest_flag) }}
+
+
+<!-- harvest -->
+<h2>{{ _('Spatial Field') }}</h2>
+{% set spatial = h.get_pkg_dict_sip4dextra(data, 'spatial', '') %}
+{{ form.input('spatial', label=_('spatial'), id='field-spatial', placeholder='{"type":"Polygon","coordinates":[[[0.0],[180,0],[180,90],[0,90],[0,0]]]}',
+  classes=['control-medium'], value=spatial, error=errors.spatial) }}
+
+<h2>{{ _('Dataset') }}</h2>

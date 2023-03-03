@@ -1,0 +1,5 @@
+Pillow
+pycryptodome
+pyproj>=2.6.0
+pycrs
+Crypto

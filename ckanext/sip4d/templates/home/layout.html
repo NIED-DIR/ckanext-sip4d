@@ -1,0 +1,24 @@
+{# ログインしていなければコンテンツを表示しない #}
+{% if not h.sip4d_guests_ban() or c.userobj %}
+{% set site_title = h.sip4d_site_title()  %}
+{% set logo_path = h.get_sip4d_logo_path() %}
+{% set logo_width = h.get_sip4d_logo_width() %}
+<div class="index-main-search">
+  <div class="container" >
+    <div class="row" >
+      {% block search %}
+        <img src="{{ logo_path }}" class="sip4d_search_logo" style="width:{{ logo_width }}">
+        {% snippet 'home/snippets/search.html' %}
+      {% endblock %}
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="index-main-search">
+  <div class="container" >
+    <div class="row" >
+      <h1 style="text-align:center; background-color:#ffffff">{{ _('Please login') }}</h1>
+    </div>
+  </div>
+</div>
+{% endif %}
