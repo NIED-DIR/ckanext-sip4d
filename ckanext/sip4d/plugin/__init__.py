@@ -99,13 +99,13 @@ class Sip4DDataViewPlugin(Sip4DMixinPlugin, p.SingletonPlugin, tk.DefaultDataset
     # ------------- IFacets ---------------#
 
     def dataset_facets(self, facets_dict, package_type):
-        show_group = config.get('ckan.sip4d.show_facets_groups', False)
+        show_group = config.get('ckanext.sip4d.show_facets_groups', False)
         if show_group is False and package_type == 'dataset' and 'groups' in facets_dict:
             del facets_dict['groups']
         return facets_dict
 
     def group_facets(self, facets_dict, group_type, package_type):
-        show_group = config.get('ckan.sip4d.show_facets_groups', False)
+        show_group = config.get('ckanext.sip4d.show_facets_groups', False)
         if show_group is False and group_type == 'organization' and 'groups' in facets_dict:
             del facets_dict['groups']
         return facets_dict
@@ -139,18 +139,21 @@ class Sip4DDataViewPlugin(Sip4DMixinPlugin, p.SingletonPlugin, tk.DefaultDataset
     def get_helpers(self):
         return {
             "build_sip4d_nav_main": sip4d_helpers.build_sip4d_nav_main,
-            'get_localedatetime': sip4d_helpers.get_localedatetime,
+            'get_sip4d_localedatetime': sip4d_helpers.get_sip4d_localedatetime,
             'get_sip4d_logo_path': sip4d_helpers.get_sip4d_logo_path,
             'get_sip4d_logo_width': sip4d_helpers.get_sip4d_logo_width,
-            "get_resource_thumbnail_url": sip4d_helpers.get_resource_thumbnail_url,
-            'get_pkg_dict_sip4dextra': sip4d_helpers.get_pkg_dict_sip4dextra,
-            'get_sip4ddefault_spatial': sip4d_helpers.get_sip4ddefault_spatial,
+            "get_sip4d_resource_thumbnail_url": sip4d_helpers.get_sip4d_resource_thumbnail_url,
+            'get_sip4d_pkg_dict_extra': sip4d_helpers.get_sip4d_pkg_dict_extra,
+            'get_sip4d_default_spatial': sip4d_helpers.get_sip4d_default_spatial,
             "get_sip4d_organization_title": sip4d_helpers.get_sip4d_organization_title,
             "get_sip4d_organization_id": sip4d_helpers.get_sip4d_organization_id,
-            'get_timerange_value': sip4d_helpers.get_timerange_value,
-            'render_datetime_sip4d': sip4d_helpers.render_datetime_sip4d,
-            "sip4d_guests_ban": sip4d_helpers.sip4d_guests_ban,
-            'sip4d_site_title' : sip4d_helpers.sip4d_site_title,
+            'get_sip4d_search_item_list': sip4d_helpers.get_sip4d_search_item_list,
+            "get_sip4d_show_search_flag": sip4d_helpers.get_sip4d_show_search_flag,
+            'get_sip4d_timerange_value': sip4d_helpers.get_sip4d_timerange_value,
+            'get_sip4d_site_title' : sip4d_helpers.get_sip4d_site_title,
+            'render_sip4d_datetime': sip4d_helpers.render_sip4d_datetime,
+            "is_sip4d_guests_ban": sip4d_helpers.is_sip4d_guests_ban,
+            # "is_sip4d_view_login_user": sip4d_helpers.is_sip4d_view_login_user,
             "sip4d_featured_organizations": sip4d_helpers.sip4d_featured_organizations,
         }
 

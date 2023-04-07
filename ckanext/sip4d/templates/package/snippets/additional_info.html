@@ -20,8 +20,8 @@
           </tr>
         {% endif %}
 
-        {% set author_mailform = h.get_pkg_dict_sip4dextra(pkg_dict, 'author_mailform', '') %}
-        {% set maintainer_mailform = h.get_pkg_dict_sip4dextra(pkg_dict, 'maintainer_mailform', '') %}
+        {% set author_mailform = h.get_sip4d_pkg_dict_extra(pkg_dict, 'author_mailform', '') %}
+        {% set maintainer_mailform = h.get_sip4d_pkg_dict_extra(pkg_dict, 'maintainer_mailform', '') %}
 
         {% if pkg_dict.author_email %}
           <tr>

@@ -24,7 +24,7 @@
   {%- block content %}
 
     {# ログインしていないとコンテンツが表示されないようにする もしくは　ログインページを表示する #}
-    {% if not h.sip4d_guests_ban() or c.userobj or (c.controller=="user" and c.action=="login") %}
+    {% if not h.is_sip4d_guests_ban() or c.userobj or (c.controller=="user" and c.action=="login") %}
       {% block maintag %}<div class="main">{% endblock %}
         <div id="content" class="container">
           {% block main_content %}

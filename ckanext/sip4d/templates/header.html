@@ -4,7 +4,6 @@
   {% set main_css = g.main_css %}
 
   {% set logo_path = h.get_sip4d_logo_path() %}
-  <a class="logo" href="{{ h.url_for('home') }}">
   {% set home_url = h.url_for('home') %}
   {% set locale_request_url = h.url_for(request.path, locale=h.lang()) %}
 
@@ -15,7 +14,6 @@
     <img src="{{ logo_path }}" width="250px" alt="{{ g.site_title }}" title="{{ g.site_title }}" /></span>
   {% endif %}
   </a>
-
 {% endblock %}
 
 {% block header_account_settings_link %}

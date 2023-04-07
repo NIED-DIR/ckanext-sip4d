@@ -38,7 +38,7 @@
 {% block page_primary_action %}
   {% set start_date = h.get_request_param('ext_startdate', '') %}
   {% set end_date = h.get_request_param('ext_enddate', '')  %}
-  {% set daterange = h.get_timerange_value(start_date, end_date) %}
+  {% set daterange = h.get_sip4d_timerange_value(start_date, end_date) %}
   <div class="module-content input-prepend sip4d-searchform-div" >
     <span class="add-on">{{ _('Date Search') }}</span>
     <input type="text" style="cursor:pointer; width: 220px" readonly id="daterange_search"
@@ -81,8 +81,8 @@
 
 {% block primary_content_inner %}
   {% if extstart_date and extend_date %}
-  {% set show_extstart_date = h.render_datetime_sip4d(extstart_date, h.lang()) %}
-  {% set show_extend_date = h.render_datetime_sip4d(extend_date, h.lang()) %}
+  {% set show_extstart_date = h.render_sip4d_datetime(extstart_date, h.lang()) %}
+  {% set show_extend_date = h.render_sip4d_datetime(extend_date, h.lang()) %}
     <h2>{{ _('{start} TO {end}').format(start=show_extstart_date, end=show_extend_date) }}</h2>
   {% endif %}
   {# <h2>{{ _('{num} datasets found').format(num=c.page.item_count) }}</h2> #}
@@ -122,7 +122,7 @@
       {% for item in c.page.items %}
         {% set itemtitle = item.title %}
         {% set information_date =　h.get_pkg_dict_extra(item, 'information_date', '') %}
-        {% set locale_date = h.get_localedatetime(information_date) %}
+        {% set locale_date = h.get_sip4d_localedatetime(information_date) %}
         {% set disaster_name = h.get_pkg_dict_extra(item, 'disaster_name', '') %}
         {% set disaster_id = h.get_pkg_dict_extra(item, 'disaster_id', '') %}
         <tr>
@@ -134,7 +134,7 @@
           </th>
           <th scope="row" class="dataset-label">
             {% if locale_date %}
-              <span>{{ h.render_datetime_sip4d(locale_date,h.lang()) }}</span>
+              <span>{{ h.render_sip4d_datetime(locale_date,h.lang()) }}</span>
             {% endif %}
           </th>
         </tr>
