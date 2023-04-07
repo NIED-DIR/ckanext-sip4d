@@ -496,18 +496,18 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                             object_ids.append(obj.id)
 
             # 削除
-            delete_dataset = guids_in_db - package_ids
-            for dataset_id in delete_dataset:
-                log.debug('CKAN(SIP4D) Delete HarvestObject for %s, pid %s', dataset_id,
-                          guid_to_package_id[dataset_id])
-                obj = HarvestObject(guid=dataset_id, job=harvest_job,
-                                    package_id=guid_to_package_id[dataset_id],  # mod
-                                    extras=[HarvestObjectExtra(key='status', value='delete')])
-                model.Session.query(HarvestObject). \
-                    filter_by(guid=dataset_id). \
-                    update({'current': False}, False)
-                obj.save()
-                object_ids.append(obj.id)
+            # delete_dataset = guids_in_db - package_ids
+            # for dataset_id in delete_dataset:
+            #     log.debug('CKAN(SIP4D) Delete HarvestObject for %s, pid %s', dataset_id,
+            #               guid_to_package_id[dataset_id])
+            #     obj = HarvestObject(guid=dataset_id, job=harvest_job,
+            #                         package_id=guid_to_package_id[dataset_id],  # mod
+            #                         extras=[HarvestObjectExtra(key='status', value='delete')])
+            #     model.Session.query(HarvestObject). \
+            #         filter_by(guid=dataset_id). \
+            #         update({'current': False}, False)
+            #     obj.save()
+            #     object_ids.append(obj.id)
 
             return object_ids
         except Exception as e:
@@ -631,22 +631,22 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
             log.error('No harvest object received')
             return False
 
-        status = self._get_object_extra(harvest_object, 'status')
-        if status == 'delete':
-            try:
-                # Delete package
-                context = {'model': model, 'session': model.Session,
-                           'user': self._get_user_name(), 'ignore_auth': True}
-                result = p.toolkit.get_action('package_delete')(context, {'id': harvest_object.package_id})
-                log.info('Deleted package {0} with guid {1}'.format(harvest_object.package_id,
-                                                                    harvest_object.guid))
-                return True
-            except NotAuthorized:
-                log.error('403 Unauthorized to delete package ')
-                return False
-            except NotFound:
-                log.error('404 Dataset not found')
-                return False
+        # status = self._get_object_extra(harvest_object, 'status')
+        # if status == 'delete':
+        #     try:
+        #         # Delete package
+        #         context = {'model': model, 'session': model.Session,
+        #                    'user': self._get_user_name(), 'ignore_auth': True}
+        #         result = p.toolkit.get_action('package_delete')(context, {'id': harvest_object.package_id})
+        #         log.info('Deleted package {0} with guid {1}'.format(harvest_object.package_id,
+        #                                                             harvest_object.guid))
+        #         return True
+        #     except NotAuthorized:
+        #         log.error('403 Unauthorized to delete package ')
+        #         return False
+        #     except NotFound:
+        #         log.error('404 Dataset not found')
+        #         return False
 
         if harvest_object.content is None:
             self._save_object_error('Empty content for object %s' %

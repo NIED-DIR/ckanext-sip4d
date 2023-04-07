@@ -115,7 +115,7 @@ class Sip4DHarvesterBase(HarvesterBase):
                     # harvest_object.content = ''
                     harvest_object.save()
 
-                    log.info('No changes to package with GUID %s, skipping...' % harvest_object.guid)
+                    log.info('SIP4d harvest: No changes to package with GUID %s, skipping...' % harvest_object.guid)
                     # NB harvest_object.current/package_id are not set
                     return 'unchanged'
 
