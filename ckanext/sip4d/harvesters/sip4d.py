@@ -37,14 +37,13 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
     config = None
 
     force_import = False
-
     api_version = 2
     action_api_version = 3
 
     def info(self):
         return {
             'name': 'sip4d',
-            'title': 'CKAN (SIP4D)',
+            'title': 'SIP4D-CKAN Harvester',
             'description': p.toolkit._('Harvests remote CKAN(SIP4D) Dataset'),
             'form_config_interface': 'Text'
         }
@@ -219,8 +218,8 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
             if 'testflags' in config_obj:
                 if not isinstance(config_obj['testflags'], list):
                     raise ValueError('testflags must be a list')
-            # else:
-            #    raise ValueError('testflags must in config')
+            else:
+                raise ValueError('testflags must in config')
 
             if 'harvestflgs' in config_obj:
                 if not isinstance(config_obj['harvestflgs'], list):
@@ -337,19 +336,56 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                 elif isinstance(harvestflg, str):
                     harvestflg_list.append(harvestflg)
             if len(harvestflg_list) > 0:
-                if 'SPF' in harvestflg_list:
-                    ors = str()
-                    if len(fq_terms) > 0:
-                        ors = ' AND '
+                # if 'SPF' in harvestflg_list:
+                ors = str()
+                if len(fq_terms) > 0:
+                    ors = ' AND '
 
-                    fq_terms.append(ors + 'harvestflg:(' + ' OR '.join(harvestflg_list) + ')')
-                else:
-                    return []
+                fq_terms.append(ors + 'harvestflg:(' + ' OR '.join(harvestflg_list) + ')')
+                # else:
+                #     return []
 
         # include_private
         include_private = self.config.get('include_private', False)
+
+        # Ideally we can request from the remote CKAN only those datasets
+        # modified since the last completely successful harvest.
+        last_error_free_job = self.last_error_free_job(harvest_job)
+        log.debug('Last error-free job: %r', last_error_free_job)
+        if (last_error_free_job and
+                not self.config.get('force_all', False)):
+            get_all_packages = False
+
+            # Request only the datasets modified since
+            last_time = last_error_free_job.gather_started
+            # Note: SOLR works in UTC, and gather_started is also UTC, so
+            # this should work as long as local and remote clocks are
+            # relatively accurate. Going back a little earlier, just in case.
+            get_changes_since = \
+                (last_time - datetime.timedelta(hours=1)).isoformat()
+            log.info('Searching for datasets modified since: %s UTC',
+                     get_changes_since)
+
+            fq_since_last_time = 'metadata_modified:[{since}Z TO *]' \
+                .format(since=get_changes_since)
+
+            try:
+                pkg_dicts = self._sip4d_search_for_datasets(
+                    remote_ckan_base_url,
+                    fq_terms + [fq_since_last_time])
+            except SearchError as e:
+                log.info('Searching for datasets changed since last time '
+                         'gave an error: %s', e)
+                get_all_packages = True
+
+            if not get_all_packages and not pkg_dicts:
+                log.info('No datasets have been updated on the remote '
+                         'CKAN instance since the last harvest job %s',
+                         last_time)
+                return []
+
         # Fall-back option - request all the datasets from the remote CKAN
-        pkg_dicts = list()
+        # pkg_dicts = list()
         if get_all_packages:
             # Request all remote packages
             try:
@@ -379,7 +415,7 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
         # Create harvest objects for each dataset
         try:
             query = model.Session.query(HarvestObject.guid, HarvestObject.package_id). \
-                filter(HarvestObject.current is True). \
+                filter(HarvestObject.current == True). \
                 filter(HarvestObject.harvest_source_id == harvest_job.source.id)
             guid_to_package_id = {}
 
