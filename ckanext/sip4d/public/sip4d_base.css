@@ -94,3 +94,67 @@
 #footer-nav ul li a:hover{
   color: #ffffff;
 }
+
+/*-- search tab --*/
+.sip4d-search-container {
+  /*margin-top: 50px;*/
+  /*padding-bottom: 40px;*/
+  /*background-color: #fff;*/
+  /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);*/
+  width: 700px;
+  margin: 0 auto;
+  padding-top: 50px;
+}
+.sip4d-search-label-container {
+  width: 100%;
+  height: 50px;
+  border-bottom: 1px solid #262626;
+}
+.sip4d-search-label {
+  width: calc(100%/3);
+  height: 50px;
+  border-top: 1px solid #262626;
+  border-left: 1px solid #262626;
+  border-right: 1px solid #262626;
+  border-bottom: 2px solid #ffffff;
+  line-height: 50px;
+  font-size: 16px;
+  text-align: center;
+  color: #565656;
+  display: block;
+  text-align: center;
+  font-weight: bold;
+  border-top-right-radius: 25px;
+  border-top-left-radius: 25px;
+}
+
+.sip4d-search-no-label {
+ /* width: 100%;*/
+  height: 50px;
+  /*float: right;*/
+  display: block;
+  border-bottom: 2px solid #262626;
+}
+.sip4d-search-div {
+  display: block;
+}
+
+.sip4d-search-input {
+  width: 250px;
+  color: #000;
+  margin-top: 15px;
+  margin-left:15px;
+  margin-right: 15px;
+  height: 2.0em;
+}
+
+.sip4d-search-select {
+  width: 150px;
+  color: #000;
+  margin-top: 15px;
+  margin-left:15px;
+}
+
+.sip4d-add-word-btn {
+
+}

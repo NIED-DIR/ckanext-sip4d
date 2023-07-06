@@ -74,3 +74,12 @@ sip4d_datetime_picker_css:
   output: ckanext-sip4d/%(version)s_sip4d_datetime_picker.css
   contents:
     - js/vendor/daterangepicker/daterangepicker.css
+
+sip4d_search_word_query_js:
+  filter: rjsmin
+  output: ckanext-sip4d/%(version)s_sip4d_search_word_query.js
+  extra:
+    preload:
+      - base/main
+  contents:
+    - js/sip4d_search_word_query.js

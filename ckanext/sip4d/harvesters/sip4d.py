@@ -37,14 +37,13 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
     config = None
 
     force_import = False
-
     api_version = 2
     action_api_version = 3
 
     def info(self):
         return {
             'name': 'sip4d',
-            'title': 'CKAN (SIP4D)',
+            'title': 'SIP4D-CKAN Harvester',
             'description': p.toolkit._('Harvests remote CKAN(SIP4D) Dataset'),
             'form_config_interface': 'Text'
         }
@@ -219,8 +218,8 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
             if 'testflags' in config_obj:
                 if not isinstance(config_obj['testflags'], list):
                     raise ValueError('testflags must be a list')
-            #else:
-            #    raise ValueError('testflags must in config')
+            else:
+                raise ValueError('testflags must in config')
 
             if 'harvestflgs' in config_obj:
                 if not isinstance(config_obj['harvestflgs'], list):
@@ -337,24 +336,60 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                 elif isinstance(harvestflg, str):
                     harvestflg_list.append(harvestflg)
             if len(harvestflg_list) > 0:
-                if 'SPF' in harvestflg_list:
-                    ors = str()
-                    if len(fq_terms) > 0:
-                        ors = ' AND '
+                # if 'SPF' in harvestflg_list:
+                ors = str()
+                if len(fq_terms) > 0:
+                    ors = ' AND '
 
-                    fq_terms.append(ors + 'harvestflg:(' + ' OR '.join(harvestflg_list) + ')')
-                else:
-                    return []
-
+                fq_terms.append(ors + 'harvestflg:(' + ' OR '.join(harvestflg_list) + ')')
+                # else:
+                #     return []
 
         # include_private
         include_private = self.config.get('include_private', False)
+
+        # Ideally we can request from the remote CKAN only those datasets
+        # modified since the last completely successful harvest.
+        last_error_free_job = self.last_error_free_job(harvest_job)
+        log.debug('Last error-free job: %r', last_error_free_job)
+        if (last_error_free_job and
+                not self.config.get('force_all', False)):
+            get_all_packages = False
+
+            # Request only the datasets modified since
+            last_time = last_error_free_job.gather_started
+            # Note: SOLR works in UTC, and gather_started is also UTC, so
+            # this should work as long as local and remote clocks are
+            # relatively accurate. Going back a little earlier, just in case.
+            get_changes_since = \
+                (last_time - datetime.timedelta(hours=1)).isoformat()
+            log.info('Searching for datasets modified since: %s UTC',
+                     get_changes_since)
+
+            fq_since_last_time = 'metadata_modified:[{since}Z TO *]' \
+                .format(since=get_changes_since)
+
+            try:
+                pkg_dicts = self._sip4d_search_for_datasets(
+                    remote_ckan_base_url,
+                    fq_terms + [fq_since_last_time])
+            except SearchError as e:
+                log.info('Searching for datasets changed since last time '
+                         'gave an error: %s', e)
+                get_all_packages = True
+
+            if not get_all_packages and not pkg_dicts:
+                log.info('No datasets have been updated on the remote '
+                         'CKAN instance since the last harvest job %s',
+                         last_time)
+                return []
+
         # Fall-back option - request all the datasets from the remote CKAN
-        pkg_dicts = list()
+        # pkg_dicts = list()
         if get_all_packages:
             # Request all remote packages
             try:
-                pkg_dicts = self._search_for_datasets(remote_ckan_base_url,
+                pkg_dicts = self._sip4d_search_for_datasets(remote_ckan_base_url,
                                                       fq_terms, include_private)
             except SearchError as e:
                 log.error('Searching for all datasets gave an error: %s', e)
@@ -380,7 +415,7 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
         # Create harvest objects for each dataset
         try:
             query = model.Session.query(HarvestObject.guid, HarvestObject.package_id). \
-                filter(HarvestObject.current is True). \
+                filter(HarvestObject.current == True). \
                 filter(HarvestObject.harvest_source_id == harvest_job.source.id)
             guid_to_package_id = {}
 
@@ -435,7 +470,6 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                                             extras=[HarvestObjectExtra(key='status', value='create')])
                         obj.save()
                         object_ids.append(obj.id)
-
             # 更新
             for dataset_id in update_dataset:
                 dataset = None
@@ -471,7 +505,6 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                                                 extras=[HarvestObjectExtra(key='status', value='update')])
                             obj.save()
                             object_ids.append(obj.id)
-
                     is_harvestflg = True
                     if harvestflgs:
                         is_harvestflg = self.check_harvestflg(harvestflgs=harvestflgs, pkg_dict=dataset)
@@ -494,7 +527,6 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                                                 extras=[HarvestObjectExtra(key='status', value='update')])
                             obj.save()
                             object_ids.append(obj.id)
-
             # 削除
             # delete_dataset = guids_in_db - package_ids
             # for dataset_id in delete_dataset:
@@ -514,6 +546,12 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
             self._save_gather_error('%r' % str(e), harvest_job)
 
     def check_harvest_flag(self, harvest_flags, pkg_dict):
+        '''
+        拡張メタデータのharvest_flagの値を確認して登録対象か確認
+        :param harvest_flags:
+        :param pkg_dict:
+        :return:
+        '''
         pkg_register_status = False
         if len(harvest_flags) > 0:
             ex_flag = get_pkg_dict_extra(pkg_dict, 'harvest_flag', None)
@@ -528,7 +566,6 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                                 break
                         if pkg_register_status:
                             break
-
         return pkg_register_status
 
     def check_testflag(self, testflags, pkg_dict):
@@ -549,7 +586,6 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                     if testflags[0] == 'none':
                         # 「none」は「testflg」の値が設定されていないデータセットを取得する
                         pkg_register_status = True
-
         return pkg_register_status
 
     def check_harvestflg(self, harvestflgs, pkg_dict):
@@ -560,10 +596,17 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                 if harvestflg == ex_flag:
                     pkg_register_status = True
                     break
-
         return pkg_register_status
 
-    def _search_for_datasets(self, remote_ckan_base_url, fq_terms=None, include_private=False):
+    def _sip4d_search_for_datasets(self, remote_ckan_base_url, fq_terms=None, include_private=False):
+        '''
+        ckanext-harvestの_search_for_datasetsをベースに改修
+        paramsにsortの追加、privateの取得フラグを追加
+        :param remote_ckan_base_url:
+        :param fq_terms:
+        :param include_private:
+        :return:
+        '''
         base_search_url = remote_ckan_base_url + self._get_search_api_offset()
         params = {'rows': '100', 'start': '0', 'sort': 'id asc'}
         if fq_terms:
@@ -631,7 +674,7 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
             log.error('No harvest object received')
             return False
 
-        # status = self._get_object_extra(harvest_object, 'status')
+        status = self._get_object_extra(harvest_object, 'status')
         # if status == 'delete':
         #     try:
         #         # Delete package
@@ -720,7 +763,6 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
 
             # Local harvest source organization
             source_dataset = get_action('package_show')(base_context.copy(), {'id': harvest_object.source.id})
-
             local_org = source_dataset.get('owner_org')
 
             remote_orgs = self.config.get('remote_orgs', None)
@@ -827,7 +869,6 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                     log.debug(e.message)
             else:
                 log.debug('extras over write')
-
             for resource in package_dict.get('resources', []):
                 # Clear remote url_type for resources (eg datastore, upload) as
                 # we are only creating normal resources with links to the
@@ -839,6 +880,7 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                 # key.
                 resource.pop('revision_id', None)
 
+            # _sip4d_create_or_update_packageを利用する
             result = self._sip4d_create_or_update_package(
                 package_dict, harvest_object, package_dict_form='package_show')
 

@@ -65,3 +65,15 @@
   {% endblock %}
 {% endblock %}
 
+
+{% block resource_actions %}
+  {% if c.userobj %}
+    {{  super() }}
+  {% endif %}
+{% endblock %}
+
+{% block resource_read_url %}
+  {% if c.userobj %}
+    {{  super() }}
+  {% endif %}
+{% endblock %}

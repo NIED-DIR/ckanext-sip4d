@@ -317,7 +317,7 @@ msgstr "クレジットタイトル"
 #: ckanext/sip4d/templates/sip4d/snippets/additional_info.html:40
 #: ckanext/sip4d/templates/sip4d/snippets/package_metadata_fields.html:37
 msgid "Testflag"
-msgstr "訓練"
+msgstr "フラグ"
 
 #: ckanext/sip4d/templates/sip4d/snippets/additional_info.html:46
 #: ckanext/sip4d/templates/sip4d/snippets/package_basic_fields.html:3
@@ -452,6 +452,21 @@ msgstr "自治体コード"
 
 msgid "testflg"
 msgstr "訓練フラグ"
+
+msgid "Advanced Search"
+msgstr "高度な検索"
+
+msgid "Add to search words"
+msgstr "検索文字列に追加"
+
+msgid "Unable to retrieve search string"
+msgstr "検索ワードが取得できません"
+
+msgid "Unable to retrieve search field"
+msgstr "検索フィールドを取得できません"
+
+msgid "Target to add search string not found"
+msgstr "検索文字を追加する入力フォームが見つかりません"
 
 #~ msgid "Harvests remote ArcGIS REST API"
 #~ msgstr ""

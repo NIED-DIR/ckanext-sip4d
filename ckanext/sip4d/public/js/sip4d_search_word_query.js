@@ -28,11 +28,10 @@ this.ckan.module('sip4d_search_word_query', function ($, _) {
               "'": '&#39;',
               '/': '&#x2F;',
               '`': '&#x60;',
-              '=': '&#x3D;',
-              ":": ''
+              '=': '&#x3D;'
             };
             function escapeHtml (string) {
-              return String(string).replace(/[&<>"'`=\/:]/g, function (s) {
+              return String(string).replace(/[&<>"'`=\/]/g, function (s) {
                 return entityMap[s];
               });
             }

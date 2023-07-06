@@ -13,7 +13,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def get_pkg_dict_sip4dextra(pkg_dict, key, default=None):
+def get_sip4d_pkg_dict_extra(pkg_dict, key, default=None):
     """
     :param pkg_dict: dictized dataset
     :param key extra key to lookup
@@ -29,7 +29,7 @@ def get_pkg_dict_sip4dextra(pkg_dict, key, default=None):
     return default
 
 
-def get_sip4ddefault_spatial(local=None):
+def get_sip4d_default_spatial(local=None):
     bbox = list()
     if local == 'ja':
         bbox = [122.5, 20.2, 154.0, 51.5]
@@ -49,7 +49,7 @@ def get_sip4ddefault_spatial(local=None):
     return json.dumps(spatial)
 
 
-def get_timerange_value(start, end):
+def get_sip4d_timerange_value(start, end):
     if not start or not end:
         return ""
     start_date = ""
@@ -68,7 +68,7 @@ def get_timerange_value(start, end):
     return ""
 
 
-def get_localedatetime(datetime):
+def get_sip4d_localedatetime(datetime):
     if not datetime:
         return ""
     try:
@@ -106,7 +106,7 @@ def get_utcdatetime(datetime):
     return ""
 
 
-def render_datetime_sip4d(strdatetime, lang):
+def render_sip4d_datetime(strdatetime, lang):
     if not strdatetime:
         return ""
     try:
@@ -123,9 +123,11 @@ def render_datetime_sip4d(strdatetime, lang):
     return strdatetime
 
 
-def sip4d_guests_ban():
-    value = config.get('ckanext.guests_ban', False)
-    return value
+def is_sip4d_guests_ban():
+    is_ban = config.get('ckanext.sip4d.guests_ban', False)
+    if is_ban == 'true' or is_ban is True:
+        return True
+    return False
 
 
 def get_sip4d_logo_path():
@@ -149,9 +151,17 @@ def get_sip4d_organization_id():
     return value
 
 
-def sip4d_site_title():
+def get_sip4d_site_title():
     site_title = config.get('ckanext.sip4d.site_title', 'SIP4D-CKAN')
     return site_title
+
+
+def get_sip4d_show_search_flag():
+    show_flag = config.get('ckanext.sip4d.show_search_div_flag', False)
+    if show_flag == 'true' or show_flag is True:
+        return True
+    return False
+
 
 def sip4d_featured_organizations(count=1):
     """Returns a list of favourite organization in the form
@@ -209,15 +219,15 @@ def sip4d_featured_group_org(items, get_action, list_action, count):
     return groups_data
 
 
-def get_resource_thumbnail_url(resources):
+def get_sip4d_resource_thumbnail_url(resources):
     """
     get package thumbnail url
     resources package.resources
     """
     try:
         # config
-        thumbnail_width = config.get('ckan.sip4d.thumbnail_width', '140px')
-        thumbnail_height = config.get('ckan.sip4d.thumbnail_height', '140px')
+        thumbnail_width = config.get('ckanext.sip4d.thumbnail_width', '140px')
+        thumbnail_height = config.get('ckanext.sip4d.thumbnail_height', '140px')
 
         image_dict = dict()
         thumbnail_url = None
@@ -238,6 +248,27 @@ def get_resource_thumbnail_url(resources):
     except ValueError as e:
         print(e)
     return None
+
+
+def get_sip4d_search_item_list():
+    """
+    configから検索に追加するアイテムリストを取得
+    ckanext.sip4d.search_item_list = id1:name2 id2:name2 id3:name3
+    title:タイトル notes:説明  author:著作者 tags:タグ disaster_name:災害名　res_format:データ形式
+    [{id:"title", name:"タイトル"},{id:"notes", name:"説明"},{id:"author", name:"著作者"},{id:"notes", name:"タグ"}]
+    :return list():
+    """
+    search_item_str = config.get('ckanext.sip4d.search_item_list', None)
+    search_dir_list = []
+    if search_item_str is not None:
+        # search_item_list = search_item_str.split()
+        # if len(search_item_list) > 0:
+        for search_item_str in search_item_str.split():
+            seach_item_list = search_item_str.split(':')
+            if len(seach_item_list) == 2:
+                search_dir_list.append({'id':seach_item_list[0],
+                                        'name':seach_item_list[1]})
+    return search_dir_list
 
 
 def build_sip4d_nav_main(*args):

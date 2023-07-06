@@ -1,11 +1,11 @@
-{% set author_mailform = h.get_pkg_dict_sip4dextra(data, 'author_mailform', '') %}
-{% set maintainer_mailform = h.get_pkg_dict_sip4dextra(data, 'maintainer_mailform', '') %}
+{% set author_mailform = h.get_sip4d_pkg_dict_extra(data, 'author_mailform', '') %}
+{% set maintainer_mailform = h.get_sip4d_pkg_dict_extra(data, 'maintainer_mailform', '') %}
 {{ form.input('author_mailform', label=_('Author contact'), id='field-author_mailform', placeholder='', classes=['control-medium'], value=author_mailform, error=errors.author_mailform) }}
 {{ form.input('maintainer_mailform', label=_('Maintainer contact'), id='field-maintainer_mailform', placeholder='', classes=['control-medium'], value=maintainer_mailform, error=errors.maintainer_mailform) }}
 
-<h2>{{ _('Disaster Field') }}</h2>
-{% set information_date = h.get_pkg_dict_sip4dextra(data, 'information_date', '') %}
-{% set locale_date = h.get_localedatetime(information_date) %}
+<!-- <h2>{{ _('Disaster Field') }}</h2> -->
+{% set information_date = h.get_sip4d_pkg_dict_extra(data, 'information_date', '') %}
+{% set locale_date = h.get_sip4d_localedatetime(information_date) %}
 {# form.input('information_date', label=_('Information Date'), id='field-information_date', placeholder='yyyy-mm-dd HH:MM:SS', value=information_date, error=errors.information_date, classes=['control-medium']) #}
 <div class="control-group control-medium">
   <label class="control-label" for="field-information_datetime">{{ _('Information Date') }}</label>
@@ -18,10 +18,10 @@
 {% include 'sip4d/snippets/sip4d_datetime_picker_' ~ type ~ '.html' %}
 
 <!-- disaster -->
-{% set disaster_id = h.get_pkg_dict_sip4dextra(data, 'disaster_id', '') %}
-{% set disaster_name = h.get_pkg_dict_sip4dextra(data, 'disaster_name', '') %}
-{% set language = h.get_pkg_dict_sip4dextra(data, 'language', '') %}
-{% set credit = h.get_pkg_dict_sip4dextra(data, 'credit', '') %}
+{% set disaster_id = h.get_sip4d_pkg_dict_extra(data, 'disaster_id', '') %}
+{% set disaster_name = h.get_sip4d_pkg_dict_extra(data, 'disaster_name', '') %}
+{% set language = h.get_sip4d_pkg_dict_extra(data, 'language', '') %}
+{% set credit = h.get_sip4d_pkg_dict_extra(data, 'credit', '') %}
 {{ form.input('disaster_id', label=_('Disaster Id'), id='field-disaster_id', placeholder='', classes=['control-medium'], value=disaster_id, error=errors.disaster_id) }}
 {{ form.input('disaster_name', label=_('Disaster Name'), id='field-disaster_name', placeholder='', classes=['control-medium'], value=disaster_name, error=errors.disaster_name) }}
 {{ form.input('language', label=_('Language'), id='field-language', placeholder='ja', classes=['control-medium'], value=language, error=errors.language) }}
@@ -30,21 +30,19 @@
 <!-- harvest -->
 <!-- <h2>{{ _('Harvest Field') }}</h2> -->
 <!--
-{% set harvest_flag = h.get_pkg_dict_sip4dextra(data, 'harvest_flag', '') %}
+{% set harvest_flag = h.get_sip4d_pkg_dict_extra(data, 'harvest_flag', '') %}
 {{ form.input('harvest_flag', label=_('Harvest Authorization'), id='field-harvest_flag', placeholder=_('Comma-separated flags'), classes=['control-medium'], value=harvest_flag, error=errors.harvest_flag) }}
 -->
-<!--
-{% set testflg = h.get_pkg_dict_sip4dextra(data, 'testflg', '') %}
+{% set testflg = h.get_sip4d_pkg_dict_extra(data, 'testflg', '') %}
 {{ form.select('testflg', id='field-testflag', label=_('Testflag'), options=[{'value': 'empty', 'text': _('Empty')},{'value': _('Normal'), 'text': _('Normal')},{'value': _('Training'), 'text': _('Training')},{'value': _('Test'), 'text': _('Test')}], selected=testflg, error=errors.testflg) }}
--->
 
 <!-- harvest -->
-<h2>{{ _('Harvest') }}</h2>
-{% set harvestflg = h.get_pkg_dict_sip4dextra(data, 'harvestflg', '') %}
+<!-- <h2>{{ _('Harvest') }}</h2> -->
+{% set harvestflg = h.get_sip4d_pkg_dict_extra(data, 'harvestflg', '') %}
 {{ form.input('harvestflg', label=_('Harvest flag'), id='field-harvestflg', placeholder='', classes=['control-medium'], value=harvestflg, error=errors.harvestflg) }}
 
 <!-- spatial -->
-<h2>{{ _('Spatial Field') }}</h2>
-{% set spatial = h.get_pkg_dict_sip4dextra(data, 'spatial', '') %}
+<!-- <h2>{{ _('Spatial Field') }}</h2> -->
+{% set spatial = h.get_sip4d_pkg_dict_extra(data, 'spatial', '') %}
 {{ form.input('spatial', label=_('spatial'), id='field-spatial', placeholder='{"type":"Polygon","coordinates":[[[0.0],[180,0],[180,90],[0,90],[0,0]]]}',
   classes=['control-medium'], value=spatial, error=errors.spatial) }}

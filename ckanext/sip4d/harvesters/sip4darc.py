@@ -51,7 +51,7 @@ class Sip4DArcGISHarvester(Sip4DHarvesterBase, SingletonPlugin):
     def info(self):
         return {
             'name': 'sip4d_arcgis',
-            'title': 'SIP4D(ArcGIS REST API)',
+            'title': 'ArcGIS Online Harvester',
             'description': p.toolkit._('Harvests dataset from remote ArcGISOnline'),
             'form_config_interface': 'Text'
         }
@@ -215,6 +215,16 @@ class Sip4DArcGISHarvester(Sip4DHarvesterBase, SingletonPlugin):
 
     # convert ArcGIS REST Item to CKAN Dataset
     def convertItemToDataset(self, url, token, items, _type, _name, _id):
+        '''
+        ArcGIS Onlineから取得したJSON形式のアイテムをCKANのデータセットの対応するフィールドに入力する
+        :param url:
+        :param token:
+        :param items:
+        :param _type:
+        :param _name:
+        :param _id:
+        :return:
+        '''
         # access 公開設定 publicのみprivate false
         if items is None:
             return None
@@ -1241,12 +1251,12 @@ class Sip4DArcGISHarvester(Sip4DHarvesterBase, SingletonPlugin):
                 if 'owner_org' not in package_dict or package_dict['owner_org'] is None:
                     package_dict['owner_org'] = local_org
 
+            # _sip4d_create_or_update_packageを利用する
             result = self._sip4d_create_or_update_package(
                 package_dict, harvest_object, package_dict_form='package_show')
 
             if result == 'unchanged':
                 log.info('harvest_object is unchanged, %s' % harvest_object.guid)
-                # harvest_object.delete()
 
             return result
         except ValidationError as e:

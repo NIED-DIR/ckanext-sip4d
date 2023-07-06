@@ -19,4 +19,28 @@
       {{ _('Searching for datasets restricted to an {0}').format(sip4d_title) }}
     </div>
   </form>
+{% set show_search_flag = h.get_sip4d_show_search_flag() %}
+  <div>show_search_flag:{{ show_search_flag }}</div>
+{% if show_search_flag %}
+  {% set sip4d_search_list = h.get_sip4d_search_item_list() %}
+  <!-- [{id:id1,name:name1},{id:id2,name:name2}] -->
+  <div class="sip4d-search-container">
+    <div class="sip4d-search-label-container">
+      <label class="sip4d-search-label">{{ _('Advanced Search') }}</label>
+    </div>
+    <div class="sip4d-search-div">
+      <select class="sip4d-search-select" name="sip4d-search-key">
+      {% for search_item in sip4d_search_list %}
+        <option value="{{ search_item.id }}">{{ search_item.name }}</option>
+      {% endfor %}
+      </select>
+      <input class="sip4d-search-input" type="text" name="sip4d-search-q" value="" />
+      <button class="btn btn-primary" type="submit" name="add"
+        data-module="sip4d_search_word_query" data-lang="{{ h.lang() }}"
+        data-inputname="sip4d-search-q" data-selectname="sip4d-search-key" data-targetname="q">{{ _('Add to search words') }}</button>
+    </div>
+  </div>
+  {% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
+  {% include 'sip4d/snippets/sip4dsearch_word_query_' ~ type ~ '.html' %}
+{% endif %}
 </div>
