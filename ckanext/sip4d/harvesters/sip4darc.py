@@ -51,7 +51,7 @@ class Sip4DArcGISHarvester(Sip4DHarvesterBase, SingletonPlugin):
     def info(self):
         return {
             'name': 'sip4d_arcgis',
-            'title': 'SIP4D(ArcGIS REST API)',
+            'title': 'ArcGIS Online Harvester',
             'description': p.toolkit._('Harvests dataset from remote ArcGISOnline'),
             'form_config_interface': 'Text'
         }

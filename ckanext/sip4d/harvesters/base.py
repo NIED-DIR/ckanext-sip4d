@@ -100,7 +100,7 @@ class Sip4DHarvesterBase(HarvesterBase):
           package_dict.setdefault('name',
                                   existing_package_dict['name'])
 
-          for field in p.toolkit.aslist(config.get('ckan.harvest.not_overwrite_fields')):
+          for field in p.toolkit.aslist(self.config.get('ckan.harvest.not_overwrite_fields')):
             if field in existing_package_dict:
               package_dict[field] = existing_package_dict[field]
 
