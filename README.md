@@ -33,7 +33,7 @@ ckanext-sip4dパッケージをckanをインストールした仮想環境下の
 6.  CKANを再起動して設定を反映します。
 
 ## Configuration
-
+### ckan.ini
 CKANの画面表示の権限確認設定  
 Trueを設定するとゲストユーザは画面表示を行えません。
 
@@ -75,3 +75,113 @@ Trueを設定するとゲストユーザは画面表示を行えません。
 データセット一覧画面で表示するサムネイル画像の高さ(px)設定
 
         ckanext.sip4d.thumbnail_height = 140
+
+### Solr
+ckanext-sip4dは、extraで追加されたinformation_dateによるソートを行うために、Solrの設定を変更する必要があります。
+    
+    <field name="information_date" type="date" indexed="true" stored="true" />
+
+        
+## DataSet
+SIP4D-CKANでは、extraで追加するメタデータを以下のように定義しています。
+| メタデータ名 | 日本語ラベル名 | 説明 |
+|:-----------|:------------|:------------|
+| information_date | 情報更新日 | データセットの情報が更新された日付を入力します。 |
+| testflg | フラグ | データセットの属性で、通常/訓練/試験のいずれかを入力します。ハーベストタイプ「SIP4D-CKAN Harvester」で参照されます。 |
+| harvestflg | ハーベストフラグ | ハーベスト対象となるデータセットを指定します。ハーベストタイプ「SIP4D-CKAN Harvester」で参照されます。 |
+| disaster_id | 災害ID | 災害情報のIDを入力します。|
+| disaster_name | 災害名 | 災害情報の名称を入力します。|
+| disaster_report |  報番号 | 災害情報の報番号を入力します。|
+| credit |  クレジットタイトル | データセットのクレジット情報を入力します。|
+| code |  情報種別コード | データセットの情報種別コードを入力します。|
+| lgcode |  自治体コード | 地方公共団体コードの上5桁（6桁目は省略）を入力します。|
+
+### サムネイル画像
+データセットのサムネイル画像は、リソース名を「thumbnail.png」として、PNG画像のURLをリソースURLに設定することで表示されます。
+## Harvest type
+以下２種類のハーベストタイプが追加されます。
+
+### SIP4D-CKAN Harvester
+標準のハーベストに加えて、以下の機能が追加されています。
+  1. 任意のデータセットをハーベスト対象とすることができます。  
+      データセットのextraにharvestflgを追加し、値のキーワードを持つデータセットをハーベスト対象とします。  
+
+  2. 手動で追加したメタデータがハーベストによって消えないようにするモードを設定できます。  
+      標準のハーベスト処理は、ハーベスト元のデータセットをコピーします。そのため、コピーされたハーベスト先のデータセットを編集し、新たにメタデータを追加しても、次回のハーベストで上書きされて消えてしまいます。  
+      このモードを有効にすると、手動で追加されたメタデータを保持しながら、ハーベストを実行します。
+
+#### configuration
+ハーベスト対象とするキーワードを列挙します。全てのデータセットをハーベスト対象とする場合は、空の配列を指定します。
+    
+    "harvestflags": ["keyword1", "keyword2", ...] or [],
+
+ハーベストモードを指定します。"overwrite"は標準のハーベストモードです。"append"は手動で追加したメタデータを保持しながらハーベストを実行します。
+
+    "harvestmode": "overwrite" or "append" , 
+
+ハーベスト対象とするフラグを指定します。"none"はtestflgがないデータセットを対象とします。"all"は全てのtestflgを対象とします。
+    
+    "testflags": ["通常","訓練", ...] or "none" or "all",
+
+#### 設定例
+        {
+                "api_version": 3,
+                "organizations_filter_include": ["test-org"],
+                "harvestflgs": ["SPF"],
+                "harvestmode" :"append",
+                "testflags":["all"]
+        }
+
+
+### ArcGIS Online Harvester
+ArcGIS Onlineのデータをハーベストします。以下はArcGIS OnlineのREST-APIから取得されるItemのプロパティ名とCKANのメタデータ名の対応表です。
+| ArcGIS | CKAN | 備考 |
+|:-----------|:------------|:------------|
+| title | title | タイトル|
+| id | name | uuid |
+| description | notes | 説明 |
+| tags | tags | タグ |
+| licenseInfo | license_title | ライセンス情報 |
+| accessInformation | owner_org | CKANのAPIで取得される組織一覧から、登録する組織のnameを取得して記述する。ハーベストコンフィグのorganization_nameを利用する。 |
+| access | private | コンテンツのアクセスレベルがpublicの場合にパブリック、private/shared/orgの場合にプライベートとする。|
+| url | url | コンテンツのURL |
+| owner | author | コンテンツの所有者 |
+| owner.email | author_email | コンテンツの所有者のメールアドレス |
+| extent | spatial |範囲情報[[minX, minY],[maxX, maxY]]からPolygonを構築して挿入する。|
+|folder.name | disaster_name | 災害名としてAOGLのフォルダー名、グループ名を利用する。ハーベストコンフィグのdisaster_nameが設定されている場合はこちらを利用する。|
+| created | metadata_created | メタデータの作成日 |
+| modified | metadata_modified | メタデータの更新日 |
+| thumbnail | リソース | リソースにthumbnail.pngを追加する。|
+| accessInformation | copyright | 著作者情報 |
+
+#### configuration
+| パラメータ名 | 説明 |
+|:-----------|:------------|
+| organization_name | ハーベスト先の組織名収集したArcGISのアイテムを登録する、ローカルのCKANの組織のタイトルを設定します。組織が存在しない場合は新規作成します。|
+| author_user | 収集したアイテムに作成者の名称を追加します。アイテムのownerに値がある場合はアイテムの値を優先します。|
+| author_email | 収集したアイテムに作成者のメールアドレスを追加します。アイテムのowner.emailに値がある場合はアイテムの値を優先します。|
+| maintainer_user | 収集したアイテムにメンテナーの名称を追加します。|
+| maintainer_email | 収集したアイテムにメンテナーのメールアドレスを追加します。|
+| username | ArcGIS Onlineのユーザ名を設定します。|
+| password | ArcGIS Onlineのユーザのパスワードを設定します。CKANの設定iniファイルに「ckanext.sip4d.pass_phrase」の英数32文字が設定されている場合、パスワードを暗号化して保存します。|
+| groups | ArcGISOnlineのグループを対象にアイテムの取得を行います。foldersの設定も同時に行えます。|
+| folders | ArcGISOnlineのフォルダーを対象にアイテムの取得を行います。groupsの設定も同時に行えます。“None”を値に設定した場合、フォルダーに登録されていないアイテムの取得を行います。|
+| all | trueを設定すると、ArcGISOnlineの全てのアイテムを対象にアイテムの取得を行います。groups,foldersの設定は無視されます。|
+
+
+#### 設定例
+    
+
+    {
+        "organization_name":"登録組織名",
+        "author_user":"作成者",
+        “author_email":"author@sample.com",
+        "maintainer_user":"メンテナー",
+        "maintainer_email":"maintainer@sample.com",
+        "username": "arcgis_user",
+        "password": "<ArcGIS USER PASSWORD>",
+        "groups": ["グループの名称1","グループの名称2"],
+        "folders": ["フォルダーの名称1","フォルダーの名称2",”None”],
+        “all”: false
+    }
+

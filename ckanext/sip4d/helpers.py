@@ -281,7 +281,7 @@ def build_sip4d_nav_main(*args):
     sip4d_name = get_sip4d_organization_title()
     if sip4d_id and sip4d_name:
         output += h.literal('<li>') + h.literal(
-            '<a href="/organization/' + sip4d_id + u'?sort=metadata_modified+desc">') \
+            '<a href="/organization/' + sip4d_id + u'?sort=score+desc,+metadata_modified+desc">') \
                   + sip4d_name + h.literal('</a>') + h.literal('</li>')
 
     for item in args:
