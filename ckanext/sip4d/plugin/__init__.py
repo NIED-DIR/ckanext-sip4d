@@ -45,7 +45,7 @@ class Sip4DDataViewPlugin(Sip4DMixinPlugin, p.SingletonPlugin, tk.DefaultDataset
     # p.implements(p.IRoutes, inherit=True)
     p.implements(p.IFacets, inherit=True)
     p.implements(p.IAuthFunctions)
-    p.implements(p.IAuthenticator)
+    p.implements(p.IAuthenticator, inherit=True)
     p.implements(p.ITemplateHelpers)
 
     if tk.check_ckan_version(min_version='2.5.0'):
@@ -127,13 +127,16 @@ class Sip4DDataViewPlugin(Sip4DMixinPlugin, p.SingletonPlugin, tk.DefaultDataset
         return
     #     return tk.redirect_to('https://server.domain.com/')  # tk.url_for(u'home.index'))
 
-    def login(self):
-        # print('IAuthenticator login')
-        return
-
-    def logout(self):
-        # print('IAuthenticator logout')
-        return
+    # def authenticate(self):
+    #     return
+    #
+    # def login(self):
+    #     # print('IAuthenticator login')
+    #     return
+    #
+    # def logout(self):
+    #     # print('IAuthenticator logout')
+    #     return
 
     # ------------- ITemplateHelpers ---------------#
     def get_helpers(self):

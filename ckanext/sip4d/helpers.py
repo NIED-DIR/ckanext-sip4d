@@ -123,7 +123,9 @@ def render_sip4d_datetime(strdatetime, lang):
     return strdatetime
 
 
-def is_sip4d_guests_ban():
+def is_sip4d_guests_ban(c):
+    print('----------------------------------------------------------------')
+    print(c.userobj)
     is_ban = config.get('ckanext.sip4d.guests_ban', False)
     if is_ban == 'true' or is_ban is True:
         return True
