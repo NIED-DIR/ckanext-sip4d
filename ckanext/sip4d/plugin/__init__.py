@@ -156,7 +156,7 @@ class Sip4DDataViewPlugin(Sip4DMixinPlugin, p.SingletonPlugin, tk.DefaultDataset
             'get_sip4d_site_title' : sip4d_helpers.get_sip4d_site_title,
             'render_sip4d_datetime': sip4d_helpers.render_sip4d_datetime,
             "is_sip4d_guests_ban": sip4d_helpers.is_sip4d_guests_ban,
-            # "is_sip4d_view_login_user": sip4d_helpers.is_sip4d_view_login_user,
+            "is_sip4d_user_page": sip4d_helpers.is_sip4d_user_page,
             "sip4d_featured_organizations": sip4d_helpers.sip4d_featured_organizations,
         }
 
