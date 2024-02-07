@@ -38,6 +38,13 @@ body {
 .masthead .nav li a{
   color: rgb(0, 0, 0);
 }
+.masthead .main-navbar ul li a{
+  color: rgb(0, 0, 0);
+}
+.masthead .main-navbar ul li:hover a, .masthead .main-navbar ul li:focus a, .masthead .main-navbar ul li.active a{
+  background-color: rgb(200, 200, 200);
+  color: rgb(0, 0, 0);
+}
 /* The "navigation pills" in the masthead (the links to Datasets,
    Organizations, etc) when the user's pointer hovers over them. */
 .masthead .navigation .nav-pills li a:hover {
@@ -57,6 +64,10 @@ body {
   box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.7);
 }
 
+
+.account .list-unstyled .notifications{
+    display: none;
+}
 
 /* ===========================================
    The content in the middle of the front page
