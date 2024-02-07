@@ -1,6 +1,6 @@
 {# ログインしていなければコンテンツを表示しない #}
 
-{% if not h.is_sip4d_guests_ban(c) or c.userobj %}
+{% if h.is_sip4d_guests_ban() %}
   {% set site_title = h.get_sip4d_site_title()  %}
   {% set logo_path = h.get_sip4d_logo_path() %}
   {% set logo_width = h.get_sip4d_logo_width() %}
