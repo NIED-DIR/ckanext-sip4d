@@ -50,6 +50,15 @@
       {{ h.render_sip4d_datetime(locale_date,h.lang()) }}
     </h2>
   {% endif %}
+  {% if package.tags %}
+      <ul class="dataset-resources list-unstyled dataset-head-taglist m-1">
+          {% for tag in package.tags %}
+          <li>
+            <a class="badge label-default text-white" >{{ tag.name }}</a>
+          </li>
+          {% endfor %}
+      </ul>
+  {% endif %}
   </div>
 {% endblock %}
 
@@ -82,18 +91,3 @@
     {% endif %}
 {% endblock %}
 
-{% block resources %}
-        {% if package.tags %}
-          {% block resources_outer %}
-            <ul class="dataset-resources list-unstyled">
-              {% block resources_inner %}
-                {% for tag in package.tags %}
-                <li>
-                  <a class="label label-default" >{{ tag.name }}</a>
-                </li>
-                {% endfor %}
-              {% endblock %}
-            </ul>
-          {% endblock %}
-        {% endif %}
-{% endblock %}
