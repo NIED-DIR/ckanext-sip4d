@@ -1,7 +1,8 @@
 
 /*-- index --*/
 .index-main-search{
-    min-height:65vh;
+    min-height: 550px;
+    height: 70vh;
     display: flex;
     align-items: center;
     background-color: #fff;

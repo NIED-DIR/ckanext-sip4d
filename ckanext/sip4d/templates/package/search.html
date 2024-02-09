@@ -4,7 +4,7 @@
 
   {#
     default sort setting
-    ckan.search.default_package_sort = metadata_modified desc
+    ckan.search.default_package_sort = score desc, metadata_modified desc
   #}
   {% set facets = {
     'fields': fields_grouped,

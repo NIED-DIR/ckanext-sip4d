@@ -51,8 +51,7 @@
             <td class="dataset-details" property="dc:creator">{{ pkg_dict.author }}</td>
           </tr>
         {% endif %}
-        {#
-        {% if pkg_dict.maintainer_email %}
+        {% if (c.userobj and c.userobj.sysadmin) and pkg_dict.maintainer_email %}
           <tr>
             <th scope="row" class="dataset-label">{{ _('Maintainer') }}</th>
             <td class="dataset-details" property="dc:contributor">
@@ -63,7 +62,7 @@
               {% endif %}
             </td>
           </tr>
-        {% elif maintainer_mailform %}
+        {% elif (c.userobj and c.userobj.sysadmin) and maintainer_mailform %}
           <tr>
             <th scope="row" class="dataset-label">{{ _('Maintainer') }}</th>
             <td class="dataset-details" property="dc:contributor">
@@ -74,13 +73,12 @@
               {% endif %}
             </td>
           </tr>
-        {% elif pkg_dict.maintainer %}
+        {% elif (c.userobj and c.userobj.sysadmin) and pkg_dict.maintainer %}
           <tr>
             <th scope="row" class="dataset-label">{{ _('Maintainer') }}</th>
             <td class="dataset-details" property="dc:contributor">{{ pkg_dict.maintainer }}</td>
           </tr>
         {% endif %}
-        #}
 
         {% if pkg_dict.version %}
           <tr>
