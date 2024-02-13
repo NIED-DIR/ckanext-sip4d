@@ -34,16 +34,16 @@ def get_sip4d_pkg_dict_extra(pkg_dict, key, default=None):
 
 def get_sip4d_default_spatial(local=None):
     bbox = list()
-    if local == 'ja':
-        bbox = [122.5, 20.2, 154.0, 51.5]
-    else:
-        extent = config.get('ckan.spatial.default_map_extent', None)
-        if extent:
-            extents = extent.split(',')
-            if len(extents) >= 4:
-                bbox = [float(extents[0]), float(extents[1]), float(extents[2]), float(extents[3])]
+    extent = config.get('ckanext.sip4d.dataset_map_extent', None)
+    if extent:
+        extents = extent.split(',')
+        if len(extents) >= 4:
+            bbox = [float(extents[0]), float(extents[1]), float(extents[2]), float(extents[3])]
     if len(bbox) != 4:
-        bbox = [-180, -90, 180, 90]
+        if local == 'ja':
+            bbox = [122.5, 20.2, 154.0, 51.5]
+        else:
+            bbox = [-180, -90, 180, 90]
 
     coordinates = [[[bbox[0], bbox[1]], [bbox[2], bbox[1]], [bbox[2], bbox[3]], [bbox[0], bbox[3]], [bbox[0], bbox[1]]]]
     spatial = dict()
@@ -122,7 +122,6 @@ def render_sip4d_datetime(strdatetime, lang):
         valid_date = parse(strdatetime)
         if lang == 'ja':
             newdate_time = valid_date.strftime(u'%Y{0}%m{1}%d{2} %H{3}%M{4}').format('年', '月', '日', '時', '分')
-            # newdate_time = valid_date.strftime(u'%Y年%m月%d日 %H時%M分'.encode('utf-8')).decode('utf-8')
             return newdate_time
         else:
             datetime_format = '%Y-%m-%dT%H:%M'
@@ -234,7 +233,7 @@ def sip4d_featured_group_org(items, get_action, list_action, count):
         try:
             out = logic.get_action(get_action)(context, data_dict)
         except logic.NotFound:
-            #            log.debug('sip4d_featured_group_org: logic not found')
+            # log.debug('sip4d_featured_group_org: logic not found')
             return None
         return out
 

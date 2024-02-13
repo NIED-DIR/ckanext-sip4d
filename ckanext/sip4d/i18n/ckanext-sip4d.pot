@@ -312,7 +312,7 @@ msgstr ""
 
 #: ckanext/sip4d/templates/sip4d/snippets/additional_info.html:40
 #: ckanext/sip4d/templates/sip4d/snippets/package_metadata_fields.html:37
-msgid "Testflag"
+msgid "Testflg"
 msgstr ""
 
 #: ckanext/sip4d/templates/sip4d/snippets/additional_info.html:46
@@ -434,3 +434,15 @@ msgstr ""
 
 msgid　"testflg"
 msgstr ""
+
+msgid "You can use * (asterisk) as a wildcard for search keywords."
+msgstr ""
+
+msgid "disaster_report"
+msgstr "報番号"
+
+msgid "remark"
+msgstr "注意事項"
+
+msgid "lisence_note"
+msgstr "ライセンスノート"
