@@ -10,6 +10,12 @@ sip4d_base_style:
   contents:
     - sip4d_base.css
 
+sip4d_dataset_style:
+  filters: cssrewrite
+  output: ckanext-sip4d/%(version)s_sip4d_dataset_style.css
+  contents:
+    - css/style.css
+
 sip4d_dataset_range_map_js:
   filter: rjsmin
   output: ckanext-sip4d/%(version)s_sip4d_dataset_range_map.js

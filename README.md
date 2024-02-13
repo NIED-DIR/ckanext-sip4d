@@ -76,6 +76,11 @@ Trueを設定するとゲストユーザは画面表示を行えません。
 
         ckanext.sip4d.thumbnail_height = 140
 
+データセット編集画面で初期表示に利用する地図画面の範囲設定
+四隅の緯度経度をカンマ区切りで設定します。
+
+        ckanext.sip4d.dataset_map_extent = 123.135,23.24,157.76,51.51
+
 ### Solr
 ckanext-sip4dは、extraで追加されたinformation_dateによるソートを行うために、Solrの設定を変更する必要があります。
     
@@ -84,6 +89,7 @@ ckanext-sip4dは、extraで追加されたinformation_dateによるソートを�
         
 ## DataSet
 SIP4D-CKANでは、extraで追加するメタデータを以下のように定義しています。
+
 | メタデータ名 | 日本語ラベル名 | 説明 |
 |:-----------|:------------|:------------|
 | information_date | 情報更新日 | データセットの情報が更新された日付を入力します。 |
@@ -121,7 +127,7 @@ SIP4D-CKANでは、extraで追加するメタデータを以下のように定�
 
 ハーベスト対象とするフラグを指定します。"none"はtestflgがないデータセットを対象とします。"all"は全てのtestflgを対象とします。
     
-    "testflags": ["通常","訓練", ...] or "none" or "all",
+    "testflgs": ["通常","訓練", ...] or "none" or "all",
 
 #### 設定例
         {
@@ -129,12 +135,13 @@ SIP4D-CKANでは、extraで追加するメタデータを以下のように定�
                 "organizations_filter_include": ["test-org"],
                 "harvestflgs": ["SPF"],
                 "harvestmode" :"append",
-                "testflags":["all"]
+                "testflgs":["all"]
         }
 
 
 ### ArcGIS Online Harvester
 ArcGIS Onlineのデータをハーベストします。以下はArcGIS OnlineのREST-APIから取得されるItemのプロパティ名とCKANのメタデータ名の対応表です。
+
 | ArcGIS | CKAN | 備考 |
 |:-----------|:------------|:------------|
 | title | title | タイトル|
