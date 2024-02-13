@@ -2,7 +2,6 @@
 
 {%- block styles %}
   {{ super() }}
-<!--  <link rel="stylesheet" href="/sip4d_base.css" />-->
   {% asset 'ckanext-sip4d/sip4d_base_style' %}
 {% endblock -%}
 
@@ -27,6 +26,7 @@
     {# ログインしていないとコンテンツが表示されないようにする もしくは　ログインページを表示する or (c.controller=="user" and c.action=="login") #}
     {% if h.is_sip4d_guests_ban() or h.is_sip4d_user_page() %}
       {{ super() }}
+
     {% else %}
       {# 非ログイン時 #}
       <div class="index-main-search">
@@ -46,7 +46,6 @@
   #}
   {%- block footer %}
     {% include "footer.html" %}
-<!--    {% asset 'ckanext-sip4d/sip4d_base_style' %}-->
   {% endblock -%}
 {%- endblock -%}
 
