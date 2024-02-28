@@ -6,7 +6,6 @@ from dateutil.parser import parse
 import pytz
 import ckan.plugins.toolkit as tk
 from ckan.common import config
-from ckan.model import AnonymousUser
 import ckan.lib.helpers as h
 
 import ckan.logic as logic
@@ -140,7 +139,7 @@ def is_sip4d_guests_ban():
     is_ban = config.get('ckanext.sip4d.guests_ban', False)
     if is_ban == 'true' or is_ban == 'True' or is_ban is True:
         is_guests_ban = True
-    if tk.c.userobj or (not is_guests_ban):
+    if not is_guests_ban:
         return True
     return False
 

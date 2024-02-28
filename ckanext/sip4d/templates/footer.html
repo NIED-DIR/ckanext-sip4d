@@ -2,7 +2,7 @@
 {% set home_url = h.url_for('home') %}
 {% set locale_request_url = h.url_for(request.path, locale=h.lang()) %}
 
-{% if h.is_sip4d_guests_ban() %}
+{% if h.is_sip4d_guests_ban() or c.userobj %}
   {# if request.path != home_url #}
   {% if c.userobj.sysadmin %}
     {% set sip4d_authorized = h.check_access('sip4d_issysadmin') %}

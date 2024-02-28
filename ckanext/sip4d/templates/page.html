@@ -24,7 +24,7 @@
   {%- block content %}
 
     {# ログインしていないとコンテンツが表示されないようにする もしくは　ログインページを表示する or (c.controller=="user" and c.action=="login") #}
-    {% if h.is_sip4d_guests_ban() or h.is_sip4d_user_page() %}
+    {% if h.is_sip4d_guests_ban() or c.userobj or h.is_sip4d_user_page() %}
       {{ super() }}
 
     {% else %}
