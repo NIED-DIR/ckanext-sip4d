@@ -426,6 +426,9 @@ msgstr "{1}に対して{0}件のデータセットが見つかりました"
 msgid "{0} datasets found"
 msgstr "{0}件のデータセットが見つかりました"
 
+msgid "Details of this data set cannot be displayed."
+msgstr ""
+
 msgid "{0} organizations found for {1}"
 msgstr "{1}に対して{0}件のデータフォルダが見つかりました"
 
@@ -470,6 +473,15 @@ msgstr "検索文字を追加する入力フォームが見つかりません"
 
 msgid "You can use * (asterisk) as a wildcard for search keywords."
 msgstr "検索キーワードのワイルドカードとして*（アスタリスク）が使えます。"
+
+msgid "disaster_report"
+msgstr "報番号"
+
+msgid "remark"
+msgstr "注意事項"
+
+msgid "lisence_note"
+msgstr "ライセンスノート"
 
 #~ msgid "Harvests remote ArcGIS REST API"
 #~ msgstr ""
