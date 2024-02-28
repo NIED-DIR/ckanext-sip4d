@@ -17,6 +17,7 @@ import socket
 from ckan import model
 from ckan.lib.uploader import get_storage_path
 from ckan.lib.helpers import json, get_pkg_dict_extra
+from ckan.lib.navl.validators import ignore_missing, ignore
 from ckan.logic import ValidationError, NotFound, get_action, NotAuthorized
 
 import ckan.plugins as p
@@ -212,14 +213,12 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                 update_date = update_now.strftime('%Y-%m-%dT%H:%M:%S')
                 config_obj['harvest_update'] = update_date
                 source_config = json.dumps(config_obj, ensure_ascii=False, encoding='utf8', indent=2, sort_keys=True)
-            # else:
-            #     raise ValueError('harvest_flags must in config')
 
-            if 'testflags' in config_obj:
-                if not isinstance(config_obj['testflags'], list):
-                    raise ValueError('testflags must be a list')
+            if 'testflgs' in config_obj:
+                if not isinstance(config_obj['testflgs'], list):
+                    raise ValueError('testflgs must be a list')
             else:
-                raise ValueError('testflags must in config')
+                raise ValueError('testflgs must in config')
 
             if 'harvestflgs' in config_obj:
                 if not isinstance(config_obj['harvestflgs'], list):
@@ -243,8 +242,7 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
         return source_config
 
     def gather_stage(self, harvest_job):
-        log.debug('In SIP4D CKANHarvester gather_stage (%s)',
-                  harvest_job.source.url)
+        log.debug('In SIP4D CKANHarvester gather_stage (%s)', harvest_job.source.url)
         p.toolkit.requires_ckan_version(min_version='2.0')
         get_all_packages = True
 
@@ -257,12 +255,6 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
         fq_terms = []
         org_filter_include = self.config.get('organizations_filter_include', [])
         org_filter_exclude = self.config.get('organizations_filter_exclude', [])
-        # if org_filter_include:
-        #    fq_terms.append(' OR '.join(
-        #        'organization:%s' % org_name for org_name in org_filter_include))
-        # elif org_filter_exclude:
-        #    fq_terms.extend(
-        #        '-organization:%s' % org_name for org_name in org_filter_exclude)
         if org_filter_include:
             ors = str()
             if len(fq_terms) > 0:
@@ -306,26 +298,25 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
         #                    ors = ' OR '
         #                fq_terms.append(ors+'harvest_flag:('+' OR '.join(harvest_flag_list)+')')
 
-        testflags = self.config.get('testflags', [])
-        if testflags:
-            testflag_list = list()
-            for testflag in testflags:
-                if isinstance(testflag,  six.binary_type):  # six.text_type):  # unicode
-                    testflag_list.append(testflag.decode('utf-8'))
-                    # testflag_list.append(testflag.encode('utf-8'))  # encode('utf-8')でbyte変換
-                elif isinstance(testflag, str):
-                    testflag_list.append(testflag)
-            if len(testflag_list) > 0:
-                if testflag_list[0] != 'all':  # 「all」は「testflg」の値を確認せずデータセットを全て取得
+        testflgs = self.config.get('testflgs', [])
+        if testflgs:
+            testflg_list = list()
+            for testflg in testflgs:
+                if isinstance(testflg,  six.binary_type):  # six.text_type):  # unicode
+                    testflg_list.append(testflg.decode('utf-8'))
+                elif isinstance(testflg, str):
+                    testflg_list.append(testflg)
+            if len(testflg_list) > 0:
+                if testflg_list[0] != 'all':  # 「all」は「testflg」の値を確認せずデータセットを全て取得
                     ors = str()
                     if len(fq_terms) > 0:
                         ors = ' AND '
-                    if testflag_list[0] == 'none':
-                        # 「none」は「testflag」の値が設定されていないデータセットを取得する
+                    if testflg_list[0] == 'none':
+                        # 「none」は「testflg」の値が設定されていないデータセットを取得する
                         fq_terms.append(ors + '-testflg:*')
                     else:
                         # 「通常」「訓練」「試験」の設定時は一致する「testflg」のデータセットを取り込む
-                        fq_terms.append(ors + 'testflg:(' + ' OR '.join(testflag_list) + ')')
+                        fq_terms.append(ors + 'testflg:(' + ' OR '.join(testflg_list) + ')')
 
         harvestflgs = self.config.get('harvestflgs', [])
         if harvestflgs:
@@ -342,8 +333,6 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                     ors = ' AND '
 
                 fq_terms.append(ors + 'harvestflg:(' + ' OR '.join(harvestflg_list) + ')')
-                # else:
-                #     return []
 
         # include_private
         include_private = self.config.get('include_private', False)
@@ -435,7 +424,7 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
             update_dataset = guids_in_db & dataset_id_list
             package_ids = set()
             object_ids = list()
-            # 新規作成
+            # データセットを新規登録
             for dataset_id in new_dataset:
                 dataset = None
                 for pkg_dict in pkg_dicts:
@@ -443,14 +432,11 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                         dataset = pkg_dict
                         break
                 if dataset:
-                    # is_harvest_flag = True
-                    is_testflag = True
-                    # if harvest_flags:
-                    if testflags:
-                        # is_harvest_flag = self.check_harvest_flag(harvest_flags=harvest_flags, pkg_dict=dataset)
-                        is_testflag = self.check_testflag(testflags=testflags, pkg_dict=dataset)
-                    # if is_harvest_flag:
-                    if is_testflag:
+                    is_testflg = True
+                    if testflgs:
+                        is_testflg = self.check_testflg(testflgs=testflgs, pkg_dict=dataset)
+
+                    if is_testflg:
                         package_ids.add(dataset_id)
                         log.debug('CKAN(SIP4D) Creating HarvestObject for %s', dataset['name'])
                         obj = HarvestObject(guid=dataset_id, job=harvest_job,
@@ -470,7 +456,7 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                                             extras=[HarvestObjectExtra(key='status', value='create')])
                         obj.save()
                         object_ids.append(obj.id)
-            # 更新
+            # データセットを更新
             for dataset_id in update_dataset:
                 dataset = None
                 for pkg_dict in pkg_dicts:
@@ -478,24 +464,26 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                         dataset = pkg_dict
                         break
                 if dataset:
-                    # is_harvest_flag = True
-                    is_testflag = True
-                    # if harvest_flags:
-                    if testflags:
-                        # is_harvest_flag = self.check_harvest_flag(harvest_flags=harvest_flags, pkg_dict=dataset)
-                        is_testflag = self.check_testflag(testflags=testflags, pkg_dict=dataset)
-                    # if is_harvest_flag:
-                    if is_testflag:
+                    is_testflg = True
+                    if testflgs:
+                        is_testflg = self.check_testflg(testflgs=testflgs, pkg_dict=dataset)
+
+                    if is_testflg:
                         package_ids.add(dataset_id)
                         existing_package_dict = self._find_existing_package(dataset)
                         is_dataset_update = False
                         if existing_package_dict:
+                            # nameが変わらないように登録済みのnameを設定
+                            dataset['name'] = existing_package_dict['name']
+                            # 更新日時を確認
                             if not 'metadata_modified' in dataset or \
                                     dataset['metadata_modified'] > existing_package_dict.get('metadata_modified'):
                                 is_dataset_update = True
                             elif 'state' in existing_package_dict and existing_package_dict['state'] == 'deleted':
                                 is_dataset_update = True
-                        # print ('dataset update: %s' % str(is_dataset_update))
+                                # stateにactiveを設定
+                                dataset['state'] = 'active'
+
                         if is_dataset_update:
                             log.debug('CKAN(SIP4D) Update HarvestObject for %s, pid %s', dataset['name'],
                                       guid_to_package_id[dataset_id])
@@ -505,9 +493,11 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                                                 extras=[HarvestObjectExtra(key='status', value='update')])
                             obj.save()
                             object_ids.append(obj.id)
+
                     is_harvestflg = True
                     if harvestflgs:
                         is_harvestflg = self.check_harvestflg(harvestflgs=harvestflgs, pkg_dict=dataset)
+
                     if is_harvestflg:
                         package_ids.add(dataset_id)
                         existing_package_dict = self._find_existing_package(dataset)
@@ -518,6 +508,9 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                                 is_dataset_update = True
                             elif 'state' in existing_package_dict and existing_package_dict['state'] == 'deleted':
                                 is_dataset_update = True
+                                # stateにactiveを設定
+                                dataset['state'] = 'active'
+
                         if is_dataset_update:
                             log.debug('CKAN(SIP4D) Update HarvestObject for %s, pid %s', dataset['name'],
                                       guid_to_package_id[dataset_id])
@@ -527,7 +520,7 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                                                 extras=[HarvestObjectExtra(key='status', value='update')])
                             obj.save()
                             object_ids.append(obj.id)
-            # 削除
+            # # 削除は廃止
             # delete_dataset = guids_in_db - package_ids
             # for dataset_id in delete_dataset:
             #     log.debug('CKAN(SIP4D) Delete HarvestObject for %s, pid %s', dataset_id,
@@ -568,22 +561,22 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                             break
         return pkg_register_status
 
-    def check_testflag(self, testflags, pkg_dict):
+    def check_testflg(self, testflgs, pkg_dict):
         pkg_register_status = False
-        if len(testflags) > 0:
-            if testflags[0] == 'all':
-                # 「all」は「testflag」の値を確認せずデータセットを全て取得
+        if len(testflgs) > 0:
+            if testflgs[0] == 'all':
+                # 「all」は「testflg」の値を確認せずデータセットを全て取得
                 pkg_register_status = True
             else:
                 ex_flag = get_pkg_dict_extra(pkg_dict, 'testflg', None)
                 if ex_flag:
-                    # 「通常」「訓練」「試験」の設定時は一致する「testflag」のデータセットを取り込む
-                    for testflag in testflags:
-                        if testflag == ex_flag:
+                    # 「通常」「訓練」「試験」の設定時は一致する「testflg」のデータセットを取り込む
+                    for testflg in testflgs:
+                        if testflg == ex_flag:
                             pkg_register_status = True
                             break
                 else:
-                    if testflags[0] == 'none':
+                    if testflgs[0] == 'none':
                         # 「none」は「testflg」の値が設定されていないデータセットを取得する
                         pkg_register_status = True
         return pkg_register_status
@@ -600,7 +593,7 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
 
     def _sip4d_search_for_datasets(self, remote_ckan_base_url, fq_terms=None, include_private=False):
         '''
-        ckanext-harvestの_search_for_datasetsをベースに改修
+        ckanext-harvestの_search_for_datasetsの改修
         paramsにsortの追加、privateの取得フラグを追加
         :param remote_ckan_base_url:
         :param fq_terms:
@@ -801,7 +794,7 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
                                 get_action('organization_create')(base_context.copy(), org)
 
                                 log.info('Organization %s has been newly created', remote_org)
-                                # mod
+                                # mod サムネイル画像をローカルにダウンロードする改修
                                 if org['image_display_url']:
                                     log.info('Copy image file %s', org['image_display_url'])
                                     image_url = org['image_display_url']
@@ -870,30 +863,21 @@ class Sip4DHarvester(Sip4DHarvesterBase, SingletonPlugin):
             else:
                 log.debug('extras over write')
             for resource in package_dict.get('resources', []):
-                # Clear remote url_type for resources (eg datastore, upload) as
-                # we are only creating normal resources with links to the
-                # remote ones
                 resource.pop('url_type', None)
-
-                # Clear revision_id as the revision won't exist on this CKAN
-                # and saving it will cause an IntegrityError with the foreign
-                # key.
                 resource.pop('revision_id', None)
-
-            # _sip4d_create_or_update_packageを利用する
-            result = self._sip4d_create_or_update_package(
+            # データセットの登録、更新の実行
+            result = self._create_or_update_package(
                 package_dict, harvest_object, package_dict_form='package_show')
-
-            if result == 'unchanged':
-                log.info('harvest_object is unchanged, %s' % harvest_object.guid)
 
             return result
         except ValidationError as e:
             self._save_object_error('Invalid package with GUID %s: %r' %
                                     (harvest_object.guid, e.error_dict),
                                     harvest_object, 'Import')
+            return False
         except Exception as e:
             self._save_object_error('%s' % e, harvest_object, 'Import')
+            return False
 
 
 class ContentFetchError(Exception):

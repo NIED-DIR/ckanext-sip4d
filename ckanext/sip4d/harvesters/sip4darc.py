@@ -78,7 +78,7 @@ class Sip4DArcGISHarvester(Sip4DHarvesterBase, SingletonPlugin):
         'disaster_name',
         # 'disaster_id',
         'language',
-        # mod
+        #
         'metadata_created',
         'metadata_modified',
         'copyright'
@@ -285,7 +285,6 @@ class Sip4DArcGISHarvester(Sip4DHarvesterBase, SingletonPlugin):
                             tags = item['tags']
                             tag_list = list()
                             if tags and isinstance(tags, list):
-                                # re_compile = re.compile(u'[!"#$%&\'\\\\()*+,-./:;<=>?@[\\]^_`{|}~「」〔〕“”〈〉『』【】＆＊・（）＄＃＠。、？！｀＋￥％　]')
                                 re_compile = re.compile(
                                     u'[!"#$%&\'\\\\()*+/:;<=>?@[\\]^_`|~「」〔〕“”〈〉『』【】＆＊・（）＄＃＠。、？！｀＋￥％　]')
                                 for tag_name in tags:
@@ -311,9 +310,6 @@ class Sip4DArcGISHarvester(Sip4DHarvesterBase, SingletonPlugin):
                         # ・その他（表示）
                         # ・その他（非オープンライセンス）
                         # ・その他（非商用）
-                        #
-                        #
-                        #
                         # ・クリエイティブ・コモンズCCO
                         # ・クリエイティブ・コモンズ表示
                         # ・クリエイティブ・コモンズ表示　継承
@@ -449,22 +445,7 @@ class Sip4DArcGISHarvester(Sip4DHarvesterBase, SingletonPlugin):
                                     owner = self.getArcGisUser(url, token, item['owner'])
                                     owner_list.append(owner)
                                 owner_email = owner['email'] if owner is not None and 'email' in owner else None
-                        # if 'owner' in item and item['owner']:
-                        #     owner = None
-                        #     for targetOwner in owner_list:
-                        #         # print ('targetUser: %s' %targetOwner['username'])
-                        #         if 'username' in targetOwner and targetOwner['username'] == item['owner']:
-                        #             owner = targetOwner
-                        #             break
-                        #     if owner is None:
-                        #         owner = self.getArcGisUser(url, token, item['owner'])
-                        #         owner_list.append(owner)
-                        #     owner_email = owner['email'] if owner is not None and 'email' in owner else None
-                        # else:
-                        #     author_email = self.config.get('author_email', None)
-                        #     if author_email:
-                        #         owner_email = author_email
-                        # email_validator
+
                         if owner_email:
                             try:
                                 email_validator(owner_email, None)
@@ -673,13 +654,11 @@ class Sip4DArcGISHarvester(Sip4DHarvesterBase, SingletonPlugin):
                     #         logging.exception(e)
                     #         dataset.append('item.shared_with_groups RuntimeError')
                 except (TypeError, ValueError) as e:
-                    # print e
                     exc_type, exc_obj, tb = sys.exc_info()
                     lineno = tb.tb_lineno
                     print(str(lineno) + ":" + str(type(e)))
                     log.error('ArcGIS Rest Item convert Error: {0}'.format(e))
                 except Exception as e:
-                    # print e
                     exc_type, exc_obj, tb = sys.exc_info()
                     lineno = tb.tb_lineno
                     print(str(lineno) + ":" + str(type(e)))
@@ -1118,6 +1097,8 @@ class Sip4DArcGISHarvester(Sip4DHarvesterBase, SingletonPlugin):
                             dataset_update_flg = True
                         elif 'state' in existing_package_dict and existing_package_dict['state'] == 'deleted':
                             dataset_update_flg = True
+                            # stateにactiveを設定
+                            dataset['state'] = 'active'
                     # print ('dataset_update_flg: %s' % str(dataset_update_flg))
                     if dataset_update_flg:
                         log.debug('ArcGis Rest Item Update HarvestObject for %s, pid %s', dataset['name'],
@@ -1236,7 +1217,7 @@ class Sip4DArcGISHarvester(Sip4DHarvesterBase, SingletonPlugin):
                             create_organization = get_action('organization_create')(context.copy(), org)
 
                             log.info('Organization %s has been newly created', config_org)
-                            # mod
+                            # # サムネイル画像のダウンロード
                             # if org['image_display_url']:
                             #    log.info('Copy image file %s', org['image_display_url'])
                             #    image_url = org['image_display_url']
@@ -1251,8 +1232,8 @@ class Sip4DArcGISHarvester(Sip4DHarvesterBase, SingletonPlugin):
                 if 'owner_org' not in package_dict or package_dict['owner_org'] is None:
                     package_dict['owner_org'] = local_org
 
-            # _sip4d_create_or_update_packageを利用する
-            result = self._sip4d_create_or_update_package(
+            package_dict['state'] = 'active'
+            result = self._create_or_update_package(
                 package_dict, harvest_object, package_dict_form='package_show')
 
             if result == 'unchanged':
