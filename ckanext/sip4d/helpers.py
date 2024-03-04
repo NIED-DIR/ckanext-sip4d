@@ -155,11 +155,11 @@ def is_sip4d_user_page():
 
 def get_sip4d_logo_path():
     """
-    SIP4D-CKANのロゴ画像のパス
-    コンフィグのckanext.sip4d.logo_pathに値があればそのパスを返す
+    SIP4D-CKANのロゴ画像のパス(defalut:/images/logo_SIP4D-CKAN.svg)
+    ckanext.sip4d.logo_pathの値を返す
     :return:
     """
-    logo_path = config.get('ckanext.sip4d.logo_path', '/images/logo_SIP4D-CKAN_01.svg')
+    logo_path = config.get('ckanext.sip4d.logo_path', '/images/logo_SIP4D-CKAN.svg')
     return logo_path
 
 

@@ -45,7 +45,7 @@ Trueを設定するとゲストユーザは画面表示を行えません。
 
 トップページに表示するロゴのパス設定
 
-        ckanext.sip4d.logo_path = /images/logo_SIP4D-CKAN_01.svg
+        ckanext.sip4d.logo_path = /images/logo_SIP4D-CKAN.svg
 
 トップページに表示するロゴの幅(%)設定
 
@@ -64,19 +64,19 @@ Trueを設定するとゲストユーザは画面表示を行えません。
         ckanext.sip4d.show_search_div_flag = true
 
 高度な検索の項目設定  
-検索対象の属性ID:画面に表示する属性名を半角スペースで区切ります。
+「検索対象の属性ID:画面に表示する属性名」を半角スペースで区切ります。
 
-        ckanext.sip4d.search_item_list =　id1:name1 id2:name2
+        ckanext.sip4d.search_item_list = title:タイトル notes:説明 author:著作者 notes:タグ
 
 データセット一覧画面で表示するサムネイル画像の幅(px)設定
 
-        ckanext.sip4d.thumbnail_width = 140
+        ckanext.sip4d.thumbnail_width = 140px
 
 データセット一覧画面で表示するサムネイル画像の高さ(px)設定
 
-        ckanext.sip4d.thumbnail_height = 140
+        ckanext.sip4d.thumbnail_height = 140px
 
-データセット編集画面で初期表示に利用する地図画面の範囲設定
+データセット編集画面の地図画面の初期表示に利用する範囲設定  
 四隅の緯度経度をカンマ区切りで設定します。
 
         ckanext.sip4d.dataset_map_extent = 123.135,23.24,157.76,51.51

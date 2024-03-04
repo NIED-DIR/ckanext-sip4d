@@ -280,16 +280,18 @@ ckanext.spatial.common_map.type = custom
 ckanext.spatial.common_map.custom.url = https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png
 ckanext.spatial.common_map.attribution = Map tiles by <a href="http://www.gsi.go.jp" target="_blank">GSI</a>
 
-ckanext.guests_ban = true
+# ckanext-sip4d
+ckanext.sip4d.guests_ban= true
+ckanext.sip4d.dataset_map_extent  = 123.135,23.24,157.76,51.51
 
 ckanext.sip4d.pass_phrase = 9emQludST3S7Sia9VyE9oQ9xdGeyHAeJ
 
 ckanext.sip4d_organization_id = sip4d
 ckanext.sip4d_organization_title = SIP4D
-ckanext.sip4d.logo_path = /images/logo_SIP4D-CKAN_M.svg
+ckanext.sip4d.logo_path = /images/logo_SIP4D-CKAN.svg
 ckanext.sip4d.logo_width_percent = 55
 
-ckan.search.default_package_sort = metadata_modified desc
+ckan.search.default_package_sort = score desc, metadata_modified
 #---
 ```
 
@@ -823,7 +825,7 @@ ckan.plugins = sip4ddata sip4dview sip4dharvest sip4d_arcgis_harvest
 ckanext.sip4d.pass_phrase=9emQludST3S7Sia9VyE9oQ9xdGeyHAeJ
 ckanext.sip4d.site_title=SIP4D-CKAN
 
-ckanext.guests_ban = true
+ckanext.sip4d.guests_ban = true
 
 ckan.sip4d.thumbnail_width = 140px
 ckan.sip4d.thumbnail_height = 140px
