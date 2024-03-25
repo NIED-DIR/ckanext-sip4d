@@ -7,7 +7,7 @@
     </a>
     {% set resource_format = res.format %}
     {% if resource_format %}
-        <a href="{{ url }}" class="label label-default" >{{ resource_format }}</a>
+        <span class="badge badge-default sip4d-resource-info-badge" data-format="{{ resource_format.lower() }}">{{ resource_format }}</span>
     {% endif %}
 {% endblock %}
 
