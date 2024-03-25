@@ -196,14 +196,12 @@ def sip4d_search_dataset():
     """
     params_list = [(k, v) for k, v in request.params.items() if k != 'organization']
     org_name = tk.request.params.get('organization', None)
-    if org_name is not None:
-        search_url = h.url_for(controller='organization', action='read', id=org_name)
-        # search_url += '&sort=score+desc,+metadata_modified+desc'
-    else:
-        search_url = h.url_for('dataset.search')  # /dataset
+    search_url = h.url_for('dataset.search')  # /dataset
     if params_list is not None and len(params_list) > 0:
         search_url = url_with_params(search_url, params_list)
-    # if org_name is not None:
-    search_url += '&sort=score+desc,+metadata_modified+desc'
-    # print(search_url)
+    if org_name is not None:
+        search_url += '&organization=' + org_name
+        # search_url = h.url_for(controller='organization', action='read', id=org_name)
+        # search_url += '&sort=score+desc,+metadata_modified+desc'
+    print(search_url)
     return tk.redirect_to(search_url)
