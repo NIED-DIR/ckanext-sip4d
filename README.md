@@ -71,11 +71,11 @@ Trueを設定するとゲストユーザは画面表示を行えません。
 
         ckanext.sip4d.search_item_list = title:タイトル notes:説明 author:著作者 notes:タグ
 
-データセット一覧画面で表示するサムネイル画像の幅(px)設定
+データセット一覧画面で表示するサムネイル画像の幅(px)を設定します。
 
         ckanext.sip4d.thumbnail_width = 140px
 
-データセット一覧画面で表示するサムネイル画像の高さ(px)設定
+データセット一覧画面で表示するサムネイル画像の高さ(px)を設定します。
 
         ckanext.sip4d.thumbnail_height = 140px
 
@@ -83,6 +83,10 @@ Trueを設定するとゲストユーザは画面表示を行えません。
 四隅の緯度経度をカンマ区切りで設定します。
 
         ckanext.sip4d.dataset_map_extent = 123.135,23.24,157.76,51.51
+
+ArcGIS Online Harvesterの利用時に、パスワードを暗号化するために利用する英数32文字を設定します。
+
+        ckanext.sip4d.pass_phrase = abcdefghijklmnopqrstuwxyz1234567
 
 ### Solr
 ckanext-sip4dは、extraで追加されたinformation_dateによるソートを行うために、Solrの設定を変更する必要があります。
@@ -142,7 +146,7 @@ SIP4D-CKANでは、extraで追加するメタデータを以下のように定�
         }
 
 
-### ArcGIS Online Harvester
+### ｆ Online Harvester
 ArcGIS Onlineのデータをハーベストします。以下はArcGIS OnlineのREST-APIから取得されるItemのプロパティ名とCKANのメタデータ名の対応表です。
 
 | ArcGIS | CKAN | 備考 |
