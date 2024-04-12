@@ -286,8 +286,8 @@ ckanext.sip4d.dataset_map_extent  = 123.135,23.24,157.76,51.51
 
 ckanext.sip4d.pass_phrase = 9emQludST3S7Sia9VyE9oQ9xdGeyHAeJ
 
-ckanext.sip4d_organization_id = sip4d
-ckanext.sip4d_organization_title = SIP4D
+ckanext.sip4d.organization_id = sip4d
+ckanext.sip4d.organization_title = SIP4D
 ckanext.sip4d.logo_path = /images/logo_SIP4D-CKAN.svg
 ckanext.sip4d.logo_width_percent = 55
 

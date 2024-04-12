@@ -203,5 +203,4 @@ def sip4d_search_dataset():
         search_url += '&organization=' + org_name
         # search_url = h.url_for(controller='organization', action='read', id=org_name)
         # search_url += '&sort=score+desc,+metadata_modified+desc'
-    print(search_url)
     return tk.redirect_to(search_url)

@@ -2,10 +2,13 @@
  SIP4D-CKAN用のCKAN拡張モジュールです。CKAN v2.9以上で使用してください。CKAN v2.10.0は未対応です。ckanext-harvest, chanext-spatialの後にckanext-sip4dをインストールしてください。
 
 ## Requirements
+
+```
 CKAN2.9.*
 ckanext-harvest  
 ckanext-spatial  
 の環境で動作を確認しています。
+```
 
 ## Installation
 1.  パッケージの配置:  
@@ -53,11 +56,11 @@ Trueを設定するとゲストユーザは画面表示を行えません。
 
 デフォルトのデータフォルダのID設定
 
-        ckanext.sip4d_organization_id = sip4d
+        ckanext.sip4d.organization_id = sip4d
 
 デフォルトのデータフォルダの名称設定
 
-        ckanext.sip4d_organization_title = SIP4D
+        ckanext.sip4d.organization_title = SIP4D
 
 高度な検索フォームの表示設定
 

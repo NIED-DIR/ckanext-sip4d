@@ -178,7 +178,7 @@ def get_sip4d_organization_title():
     トップページから遷移する組織名を返す
     :return:
     """
-    value = config.get('ckanext.sip4d_organization_title', 'SIP4D')
+    value = config.get('ckanext.sip4d.organization_title', 'SIP4D')
     return value
 
 
@@ -187,7 +187,7 @@ def get_sip4d_organization_id():
     トップページから遷移する組織のnameを返す
     :return:
     """
-    value = config.get('ckanext.sip4d_organization_id', 'sip4d')
+    value = config.get('ckanext.sip4d.organization_id', 'sip4d')
     return value
 
 
