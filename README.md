@@ -1,5 +1,5 @@
 # ckanext-sip4d
- SIP4D-CKAN用のCKAN拡張モジュールです。CKAN v2.9以上で使用してください。CKAN v2.10.0は未対応です。ckanext-harvest, chanext-spatialの後にckanext-sip4dをインストールしてください。
+ SIP4D-CKAN用のCKAN拡張モジュールです。CKAN v2.9以上で使用してください。ckanext-harvest, chanext-spatialのインストール後にckanext-sip4dをインストールしてください。
 
 ## Requirements
 
@@ -11,15 +11,17 @@ ckanext-spatial
 ```
 
 ## Installation
-1.  パッケージの配置:  
-ckanext-sip4dパッケージをckanをインストールした仮想環境下のパス（本手順書では/usr/lib/ckan/default/src/とする）に配置します。
 
-        mv　ckanext-sip4d /usr/lib/ckan/default/src/
-
-2.  仮想環境のactivate:
+1.  仮想環境のactivate:
 
         . /usr/lib/ckan/default/bin/activate
-      
+
+2.  パッケージのクローン:  
+ckanext-sip4dパッケージをckanをインストールした仮想環境下のパス（本手順書では/usr/lib/ckan/default/src/とする）に配置します。
+
+        cd /usr/lib/ckan/default/src/
+        git clone -b 1.1 https://github.com/NIED-DIR/ckanext-sip4d.git
+     
 3.  ckanext-sip4dインストール:
 
         cd /usr/lib/ckan/default/src/ckanext-sip4d
