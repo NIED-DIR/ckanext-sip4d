@@ -148,7 +148,7 @@ SIP4D-CKANでは、extraで追加するメタデータを以下のように定�
         }
 
 
-### ｆ Online Harvester
+### ArcGIS Online Harvester
 ArcGIS Onlineのデータをハーベストします。以下はArcGIS OnlineのREST-APIから取得されるItemのプロパティ名とCKANのメタデータ名の対応表です。
 
 | ArcGIS | CKAN | 備考 |
