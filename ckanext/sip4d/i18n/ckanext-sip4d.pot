@@ -113,13 +113,15 @@ msgstr ""
 msgid "Harvest"
 msgstr ""
 
-#: ckanext/sip4d/templates/footer.html:12 ckanext/sip4d/templates/sip4d/base.html:3
+#: ckanext/sip4d/templates/footer.html:12
+#: ckanext/sip4d/templates/sip4d/base.html:3
 #: ckanext/sip4d/templates/sip4d/base.html:12
 #: ckanext/sip4d/templates/sip4d/base.html:28
 msgid "Disaster Info Mass Update"
 msgstr ""
 
-#: ckanext/sip4d/templates/footer.html:40 ckanext/sip4d/templates/footer.html:41
+#: ckanext/sip4d/templates/footer.html:40
+#: ckanext/sip4d/templates/footer.html:41
 msgid "National Research Institute for Earth Science and Disaster Resilience"
 msgstr ""
 
@@ -312,7 +314,7 @@ msgstr ""
 
 #: ckanext/sip4d/templates/sip4d/snippets/additional_info.html:40
 #: ckanext/sip4d/templates/sip4d/snippets/package_metadata_fields.html:37
-msgid "Testflag"
+msgid "Testflg"
 msgstr ""
 
 #: ckanext/sip4d/templates/sip4d/snippets/additional_info.html:46
@@ -354,6 +356,11 @@ msgstr ""
 
 #: ckanext/sip4d/templates/sip4d/snippets/package_basic_fields.html:31
 msgid "harvest key"
+msgstr ""
+
+#: ckanext/sip4d/templates/sip4d/snippets/additional_info.html:53
+#: ckanext/sip4d/templates/sip4d/snippets/package_metadata_fields.html:44
+msgid "Harvest flag"
 msgstr ""
 
 #: ckanext/sip4d/templates/sip4d/snippets/package_basic_fields.html:35
@@ -405,6 +412,12 @@ msgstr ""
 msgid "This site refers to organizations in CKAN as data folders. A data folder is used to create, manage, and publish a set of data sets. Users can have different roles in a data folder depending on their permission levels for creating, editing, and publishing."
 msgstr ""
 
+msgid "Details of this data set cannot be displayed."
+msgstr ""
+
+msgid "Searching for datasets restricted to an {0}"
+msgstr ""
+
 msgid "{0} datasets found for {1}"
 msgstr ""
 
@@ -412,6 +425,12 @@ msgid "{0} datasets found"
 msgstr ""
 
 msgid "Details of this data set cannot be displayed."
+msgstr ""
+
+msgid "{0} organizations found for {1}"
+msgstr ""
+
+msgid "{0} organizations found"
 msgstr ""
 
 msgid "Filter by location"
@@ -434,3 +453,30 @@ msgstr ""
 
 msgid　"testflg"
 msgstr ""
+
+msgid "Advanced Search"
+msgstr ""
+
+msgid "Add to search words"
+msgstr ""
+
+msgid "Unable to retrieve search string"
+msgstr ""
+
+msgid "Unable to retrieve search field"
+msgstr ""
+
+msgid "Target to add search string not found"
+msgstr ""
+
+msgid "You can use * (asterisk) as a wildcard for search keywords."
+msgstr ""
+
+msgid "disaster_report"
+msgstr "報番号"
+
+msgid "remark"
+msgstr "注意事項"
+
+msgid "lisence_note"
+msgstr "ライセンスノート"

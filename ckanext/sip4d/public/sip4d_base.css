@@ -1,12 +1,8 @@
 
-/*-- header --*/
-.account .list-unstyled .notifications{
-    /*display: none;*/
-}
-
 /*-- index --*/
 .index-main-search{
-    min-height:60vh;
+    min-height: 550px;
+    height: 70vh;
     display: flex;
     align-items: center;
     background-color: #fff;
@@ -157,4 +153,8 @@
 
 .sip4d-add-word-btn {
 
+}
+
+.sip4d-resource-info-badge {
+    background-color: #6e6e6e;
 }

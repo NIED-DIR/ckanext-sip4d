@@ -4,7 +4,7 @@
 
   {#
     default sort setting
-    ckan.search.default_package_sort = metadata_modified desc
+    ckan.search.default_package_sort = score desc, metadata_modified desc
   #}
   {% set facets = {
     'fields': fields_grouped,
@@ -34,11 +34,6 @@
   <div>
   {% snippet "spatial/snippets/spatial_query.html", default_extent="[[31.0, 128.0], [46.0, 148.0]]" %}
   </div>
-  <div>
-  {% for facet in c.facet_titles %}
-  {{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet) }}
-  {% endfor %}
-  </div>
-  <a class="close no-text hide-filters"><i class="fa fa-times-circle"></i><span class="text">close</span></a>
-  </div>
+  {{ super() }}
+
 {% endblock %}

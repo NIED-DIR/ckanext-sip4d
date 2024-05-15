@@ -1,22 +1,27 @@
 # ckanext-sip4d
- SIP4D-CKAN用のCKAN拡張モジュールです。CKAN v2.9以上で使用してください。CKAN v2.10.0は未対応です。ckanext-harvest, chanext-spatialの後にckanext-sip4dをインストールしてください。
+ SIP4D-CKAN用のCKAN拡張モジュールです。CKAN v2.9以上で使用してください。ckanext-harvest, chanext-spatialのインストール後にckanext-sip4dをインストールしてください。
 
 ## Requirements
+
+```
 CKAN2.9.*
 ckanext-harvest  
 ckanext-spatial  
 の環境で動作を確認しています。
+```
 
 ## Installation
-1.  パッケージの配置:  
-ckanext-sip4dパッケージをckanをインストールした仮想環境下のパス（本手順書では/usr/lib/ckan/default/src/とする）に配置します。
 
-        mv　ckanext-sip4d /usr/lib/ckan/default/src/
-
-2.  仮想環境のactivate:
+1.  仮想環境のactivate:
 
         . /usr/lib/ckan/default/bin/activate
-      
+
+2.  パッケージのクローン:  
+ckanext-sip4dパッケージをckanをインストールした仮想環境下のパス（本手順書では/usr/lib/ckan/default/src/とする）に配置します。
+
+        cd /usr/lib/ckan/default/src/
+        git clone -b 1.1 https://github.com/NIED-DIR/ckanext-sip4d.git
+     
 3.  ckanext-sip4dインストール:
 
         cd /usr/lib/ckan/default/src/ckanext-sip4d
@@ -45,7 +50,7 @@ Trueを設定するとゲストユーザは画面表示を行えません。
 
 トップページに表示するロゴのパス設定
 
-        ckanext.sip4d.logo_path = /images/logo_SIP4D-CKAN_01.svg
+        ckanext.sip4d.logo_path = /images/logo_SIP4D-CKAN.svg
 
 トップページに表示するロゴの幅(%)設定
 
@@ -53,28 +58,37 @@ Trueを設定するとゲストユーザは画面表示を行えません。
 
 デフォルトのデータフォルダのID設定
 
-        ckanext.sip4d_organization_id = sip4d
+        ckanext.sip4d.organization_id = sip4d
 
 デフォルトのデータフォルダの名称設定
 
-        ckanext.sip4d_organization_title = SIP4D
+        ckanext.sip4d.organization_title = SIP4D
 
 高度な検索フォームの表示設定
 
         ckanext.sip4d.show_search_div_flag = true
 
 高度な検索の項目設定  
-検索対象の属性ID:画面に表示する属性名を半角スペースで区切ります。
+「検索対象の属性ID:画面に表示する属性名」を半角スペースで区切ります。
 
-        ckanext.sip4d.search_item_list =　id1:name1 id2:name2
+        ckanext.sip4d.search_item_list = title:タイトル notes:説明 author:著作者 notes:タグ
 
-データセット一覧画面で表示するサムネイル画像の幅(px)設定
+データセット一覧画面で表示するサムネイル画像の幅(px)を設定します。
 
-        ckanext.sip4d.thumbnail_width = 140
+        ckanext.sip4d.thumbnail_width = 140px
 
-データセット一覧画面で表示するサムネイル画像の高さ(px)設定
+データセット一覧画面で表示するサムネイル画像の高さ(px)を設定します。
 
-        ckanext.sip4d.thumbnail_height = 140
+        ckanext.sip4d.thumbnail_height = 140px
+
+データセット編集画面の地図画面の初期表示に利用する範囲設定  
+四隅の緯度経度をカンマ区切りで設定します。
+
+        ckanext.sip4d.dataset_map_extent = 123.135,23.24,157.76,51.51
+
+ArcGIS Online Harvesterの利用時に、パスワードを暗号化するために利用する英数32文字を設定します。
+
+        ckanext.sip4d.pass_phrase = abcdefghijklmnopqrstuwxyz1234567
 
 ### Solr
 ckanext-sip4dは、extraで追加されたinformation_dateによるソートを行うために、Solrの設定を変更する必要があります。
@@ -84,6 +98,7 @@ ckanext-sip4dは、extraで追加されたinformation_dateによるソートを�
         
 ## DataSet
 SIP4D-CKANでは、extraで追加するメタデータを以下のように定義しています。
+
 | メタデータ名 | 日本語ラベル名 | 説明 |
 |:-----------|:------------|:------------|
 | information_date | 情報更新日 | データセットの情報が更新された日付を入力します。 |
@@ -121,7 +136,7 @@ SIP4D-CKANでは、extraで追加するメタデータを以下のように定�
 
 ハーベスト対象とするフラグを指定します。"none"はtestflgがないデータセットを対象とします。"all"は全てのtestflgを対象とします。
     
-    "testflags": ["通常","訓練", ...] or "none" or "all",
+    "testflgs": ["通常","訓練", ...] or "none" or "all",
 
 #### 設定例
         {
@@ -129,12 +144,13 @@ SIP4D-CKANでは、extraで追加するメタデータを以下のように定�
                 "organizations_filter_include": ["test-org"],
                 "harvestflgs": ["SPF"],
                 "harvestmode" :"append",
-                "testflags":["all"]
+                "testflgs":["all"]
         }
 
 
-### ArcGIS Online Harvester
+### ｆ Online Harvester
 ArcGIS Onlineのデータをハーベストします。以下はArcGIS OnlineのREST-APIから取得されるItemのプロパティ名とCKANのメタデータ名の対応表です。
+
 | ArcGIS | CKAN | 備考 |
 |:-----------|:------------|:------------|
 | title | title | タイトル|

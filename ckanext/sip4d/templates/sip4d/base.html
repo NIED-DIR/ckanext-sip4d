@@ -14,7 +14,7 @@
 
 {% block styles %}
   {{ super() }}
-  <link type="text/css" rel="stylesheet" media="all" href="/css/style.css" />
+  {% asset 'ckanext-sip4d/sip4d_dataset_style' %}
 {% endblock %}
 
 {% block scripts %}
@@ -104,18 +104,19 @@
   </div>
 
   <form class="update-disaster-form" id="update-disaster-form" method="post" onsubmit="return false;">
+    {{ h.csrf_input() if 'csrf_input' in h }}
     <table class="table table-striped table-bordered table-condensed">
       <thead>
         <tr>
-          <th class="sip4ddataset-table-check-header" style="vertical-align: baseline;" rowspan="2">
+          <th class="table-secondary border border-white text-center" style="vertical-align: baseline;" rowspan="2">
             <input type="checkbox" id="all_check"/>
           </th>
-          <th scope="row" class="sip4ddataset-label-header">{{ _('Title') }}</th>
-          <th scope="row" class="sip4ddataset-label-header">{{ _('Information Date') }}</th>
+          <th scope="row" class="table-secondary border border-white">{{ _('Title') }}</th>
+          <th scope="row" class="table-secondary border border-white">{{ _('Information Date') }}</th>
         </tr>
         <tr>
-          <th class="sip4ddataset-details-header">{{ _('Disaster Id') }}</th>
-          <th class="sip4ddataset-details-header">{{ _('Disaster Name') }}</th>
+          <th class="table-secondary border border-white">{{ _('Disaster Id') }}</th>
+          <th class="table-secondary border border-white">{{ _('Disaster Name') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -158,22 +159,24 @@
         <tr>
           <td colspan="3" class="disaster-update-td">
             <input type="text" class="disaster-update-text" name="disaster_id" value="" placeholder="{{ _('New Disaster Id') }}">
-            <button class="btn disaster-update-button" id="disaster_id_update">{{ _('Disaster ID Mass Update') }}</button>
+            <button class="btn btn-primary disaster-update-button" id="disaster_id_update">{{ _('Disaster ID Mass Update') }}</button>
           </td>
         </tr>
         <tr>
           <td colspan="3" class="disaster-update-td">
             <input type="text" class="disaster-update-text" name="disaster_name" value=""  placeholder="{{ _('New Disaster Name') }}">
-            <button class="btn disaster-update-button" id="disaster_name_update">{{ _('Disaster Name Mass Update') }}</button>
+            <button class="btn btn-primary disaster-update-button" id="disaster_name_update">{{ _('Disaster Name Mass Update') }}</button>
           </td>
         </tr>
-        <!-- tr>
+      {# 災害フラグ編集は現状利用しない
+        <tr>
           <td colspan="3" class="disaster-update-td">
             <input type="text" class="disaster-update-text" name="harvest_flag" value=""  placeholder="{{ _('New Harvest Flag') }}">
             <button class="btn disaster-update-button" id="harvest_flag_update">{{ _('Harvest Flag Mass Update') }}</button>
           </td>
-        </tr -->
-      </tbody>
+        </tr>
+      #}
+     </tbody>
     </table>
   </form>
   {% block page_pagination %}

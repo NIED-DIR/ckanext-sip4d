@@ -54,13 +54,13 @@ def datesetview():
         # datetime2utc
         utc_start_date = sip4d_helpers.get_utcdatetime(start_date)
         utc_end_date = sip4d_helpers.get_utcdatetime(end_date)
-        print("utc_start_date %s" % utc_start_date)
+        # log.debug("utc_start_date %s" % utc_start_date)
 
         fq = ''
         if utc_start_date and utc_end_date and len(utc_start_date) > 0 and len(utc_end_date) > 0:
             fq = '{ext_search_date_type}:[{start_date} TO {end_date}]'.format(
                 ext_search_date_type=ext_search_date_type, start_date=utc_start_date, end_date=utc_end_date)
-        print(fq)
+
         search_dict = {
             'q': q,
             'fq': fq,
@@ -139,7 +139,6 @@ def disasterupdate(response):
         update_count = 0
         for pkgid in datasetIds:
             try:
-                print("#---------------------")
                 # get package
                 pkg_dict = logic.get_action('package_show')(context, {'id': pkgid})
                 # pkg = model.Package.get(pkgid)
@@ -169,12 +168,9 @@ def disasterupdate(response):
                     extraitem['value'] = update_value
                     extraitem['state'] = 'active'
                     pkg_dict['extras'].append(extraitem)
-                print(pkg_dict)
 
                 update_dict = logic.get_action('package_update')(context, pkg_dict)
 
-                print(update_dict)
-                # log.info('Mas Update '+update_type+' :'+pkgid)
                 if update_dict:
                     update_count += 1
                 sleep(0.01)
@@ -200,15 +196,11 @@ def sip4d_search_dataset():
     """
     params_list = [(k, v) for k, v in request.params.items() if k != 'organization']
     org_name = tk.request.params.get('organization', None)
-    if org_name is not None:
-        search_url = h.url_for(controller='organization', action='read', id=org_name)
-        # search_url += '&sort=score+desc,+metadata_modified+desc'
-    else:
-        search_url = h.url_for('dataset.search')  # /dataset
+    search_url = h.url_for('dataset.search')  # /dataset
     if params_list is not None and len(params_list) > 0:
         search_url = url_with_params(search_url, params_list)
-    # print(params_list)
-    # if org_name is not None:
-    search_url += '&sort=score+desc,+metadata_modified+desc'
-    # print(search_url)
+    if org_name is not None:
+        search_url += '&organization=' + org_name
+        # search_url = h.url_for(controller='organization', action='read', id=org_name)
+        # search_url += '&sort=score+desc,+metadata_modified+desc'
     return tk.redirect_to(search_url)

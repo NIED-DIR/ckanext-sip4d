@@ -6,7 +6,6 @@
 
 <div class="module module-search module-narrow module-shallow box" style="border: none;">
   <form class="module-content search-form" method="get" action="{% url_for '/sip4d_search_dataset', action='search' %}">
-<!--    <h3 class="heading">{{ _("Search data") }}</h3>-->
     <div class="search-input control-group search-giant" style="width: 50%;min-width: 300px;margin: 0 auto;">
       <input type="text" class="search" style="border-radius: 40px;" name="q" value="" autocomplete="off" placeholder="{% block search_placeholder %}{{ placeholder }}{% endblock %}" />
       <button type="submit">
@@ -39,6 +38,7 @@
         data-module="sip4d_search_word_query" data-lang="{{ h.lang() }}"
         data-inputname="sip4d-search-q" data-selectname="sip4d-search-key" data-targetname="q">{{ _('Add to search words') }}</button>
     </div>
+    <p class="text-start text-lowercase text-dark text-decoration-underline m-2">{{ _('You can use * (asterisk) as a wildcard for search keywords.') }}</p>
   </div>
   {% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
   {% include 'sip4d/snippets/sip4dsearch_word_query_' ~ type ~ '.html' %}

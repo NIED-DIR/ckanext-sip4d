@@ -45,7 +45,7 @@ class Sip4DDataViewPlugin(Sip4DMixinPlugin, p.SingletonPlugin, tk.DefaultDataset
     # p.implements(p.IRoutes, inherit=True)
     p.implements(p.IFacets, inherit=True)
     p.implements(p.IAuthFunctions)
-    p.implements(p.IAuthenticator)
+    p.implements(p.IAuthenticator, inherit=True)
     p.implements(p.ITemplateHelpers)
 
     if tk.check_ckan_version(min_version='2.5.0'):
@@ -127,13 +127,16 @@ class Sip4DDataViewPlugin(Sip4DMixinPlugin, p.SingletonPlugin, tk.DefaultDataset
         return
     #     return tk.redirect_to('https://server.domain.com/')  # tk.url_for(u'home.index'))
 
-    def login(self):
-        # print('IAuthenticator login')
-        return
-
-    def logout(self):
-        # print('IAuthenticator logout')
-        return
+    # def authenticate(self):
+    #     return
+    #
+    # def login(self):
+    #     # print('IAuthenticator login')
+    #     return
+    #
+    # def logout(self):
+    #     # print('IAuthenticator logout')
+    #     return
 
     # ------------- ITemplateHelpers ---------------#
     def get_helpers(self):
@@ -153,7 +156,7 @@ class Sip4DDataViewPlugin(Sip4DMixinPlugin, p.SingletonPlugin, tk.DefaultDataset
             'get_sip4d_site_title' : sip4d_helpers.get_sip4d_site_title,
             'render_sip4d_datetime': sip4d_helpers.render_sip4d_datetime,
             "is_sip4d_guests_ban": sip4d_helpers.is_sip4d_guests_ban,
-            # "is_sip4d_view_login_user": sip4d_helpers.is_sip4d_view_login_user,
+            "is_sip4d_user_page": sip4d_helpers.is_sip4d_user_page,
             "sip4d_featured_organizations": sip4d_helpers.sip4d_featured_organizations,
         }
 

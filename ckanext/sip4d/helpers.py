@@ -4,6 +4,7 @@ import re
 import json
 from dateutil.parser import parse
 import pytz
+import ckan.plugins.toolkit as tk
 from ckan.common import config
 import ckan.lib.helpers as h
 
@@ -15,6 +16,7 @@ log = logging.getLogger(__name__)
 
 def get_sip4d_pkg_dict_extra(pkg_dict, key, default=None):
     """
+    パッケージの対象の拡張メタデータの値を返す。対象の拡張メタデータは描画の重複を避けるためパッケージから削除する。
     :param pkg_dict: dictized dataset
     :param key extra key to lookup
     :param default value returned if not found
@@ -31,16 +33,16 @@ def get_sip4d_pkg_dict_extra(pkg_dict, key, default=None):
 
 def get_sip4d_default_spatial(local=None):
     bbox = list()
-    if local == 'ja':
-        bbox = [122.5, 20.2, 154.0, 51.5]
-    else:
-        extent = config.get('ckan.spatial.default_map_extent', None)
-        if extent:
-            extents = extent.split(',')
-            if len(extents) >= 4:
-                bbox = [float(extents[0]), float(extents[1]), float(extents[2]), float(extents[3])]
+    extent = config.get('ckanext.sip4d.dataset_map_extent', None)
+    if extent:
+        extents = extent.split(',')
+        if len(extents) >= 4:
+            bbox = [float(extents[0]), float(extents[1]), float(extents[2]), float(extents[3])]
     if len(bbox) != 4:
-        bbox = [-180, -90, 180, 90]
+        if local == 'ja':
+            bbox = [122.5, 20.2, 154.0, 51.5]
+        else:
+            bbox = [-180, -90, 180, 90]
 
     coordinates = [[[bbox[0], bbox[1]], [bbox[2], bbox[1]], [bbox[2], bbox[3]], [bbox[0], bbox[3]], [bbox[0], bbox[1]]]]
     spatial = dict()
@@ -107,13 +109,18 @@ def get_utcdatetime(datetime):
 
 
 def render_sip4d_datetime(strdatetime, lang):
+    """
+    SIP4Dで利用する日時情報を文字列に整形して返す
+    :param strdatetime:
+    :param lang:
+    :return:
+    """
     if not strdatetime:
         return ""
     try:
         valid_date = parse(strdatetime)
         if lang == 'ja':
             newdate_time = valid_date.strftime(u'%Y{0}%m{1}%d{2} %H{3}%M{4}').format('年', '月', '日', '時', '分')
-            # newdate_time = valid_date.strftime(u'%Y年%m月%d日 %H時%M分'.encode('utf-8')).decode('utf-8')
             return newdate_time
         else:
             datetime_format = '%Y-%m-%dT%H:%M'
@@ -124,34 +131,71 @@ def render_sip4d_datetime(strdatetime, lang):
 
 
 def is_sip4d_guests_ban():
+    """
+    コンフィグのckanext.sip4d.guests_banを確認して、非ログインユーザーの場合は画面表示を抑制する
+    :return: Bool
+    """
+    is_guests_ban = False
     is_ban = config.get('ckanext.sip4d.guests_ban', False)
-    if is_ban == 'true' or is_ban is True:
+    if is_ban == 'true' or is_ban == 'True' or is_ban is True:
+        is_guests_ban = True
+    if not is_guests_ban:
+        return True
+    return False
+
+def is_sip4d_user_page():
+    """
+    表示中の画面がuser/login画面ならTrueを返す
+    :return: Bool
+    """
+    if tk.get_endpoint()[0] in ['user', 'login']:
         return True
     return False
 
 
 def get_sip4d_logo_path():
-    logo_path = config.get('ckanext.sip4d.logo_path', '/images/logo_SIP4D-CKAN_01.svg')
+    """
+    SIP4D-CKANのロゴ画像のパス(defalut:/images/logo_SIP4D-CKAN.svg)
+    ckanext.sip4d.logo_pathの値を返す
+    :return:
+    """
+    logo_path = config.get('ckanext.sip4d.logo_path', '/images/logo_SIP4D-CKAN.svg')
     return logo_path
 
 
 def get_sip4d_logo_width():
+    """
+    ロゴの画面に対する幅（％）を返す
+    :return:
+    """
     logo_style = config.get('ckanext.sip4d.logo_width_percent', '55')
     logo_style += '%'
     return logo_style
 
 
 def get_sip4d_organization_title():
-    value = config.get('ckanext.sip4d_organization_title', 'SIP4D')
+    """
+    トップページから遷移する組織名を返す
+    :return:
+    """
+    value = config.get('ckanext.sip4d.organization_title', 'SIP4D')
     return value
 
 
 def get_sip4d_organization_id():
-    value = config.get('ckanext.sip4d_organization_id', 'sip4d')
+    """
+    トップページから遷移する組織のnameを返す
+    :return:
+    """
+    value = config.get('ckanext.sip4d.organization_id', 'sip4d')
     return value
 
 
 def get_sip4d_site_title():
+    """
+    トップページに表示するサイトタイトルを返す
+    :return:
+    """
     site_title = config.get('ckanext.sip4d.site_title', 'SIP4D-CKAN')
     return site_title
 
@@ -164,12 +208,12 @@ def get_sip4d_show_search_flag():
 
 
 def sip4d_featured_organizations(count=1):
-    """Returns a list of favourite organization in the form
-    of organization_list action function
     """
-    #    config_orgs = config.get('ckan.featured_orgs', '').split()
+    トップページに並べるナビゲーションのリストを返す
+    :param count:
+    :return:
+    """
     config_orgs = [get_sip4d_organization_id()]
-    #    orgs = h.featured_group_org(get_action='organization_show',
     orgs = sip4d_featured_group_org(get_action='organization_show',
                                     list_action='organization_list',
                                     count=count,
@@ -187,17 +231,12 @@ def sip4d_featured_group_org(items, get_action, list_action, count):
 
         try:
             out = logic.get_action(get_action)(context, data_dict)
-        #            log.debug('sip4d_featured_group_org 1')
-        #            log.debug(out)
         except logic.NotFound:
-            #            log.debug('sip4d_featured_group_org: logic not found')
+            # log.debug('sip4d_featured_group_org: logic not found')
             return None
         return out
 
     groups_data = []
-
-    #    extras = logic.get_action(list_action)({}, {})
-
     # list of found ids to prevent duplicates
     found = []
 

@@ -2,7 +2,7 @@
 {% set home_url = h.url_for('home') %}
 {% set locale_request_url = h.url_for(request.path, locale=h.lang()) %}
 
-{% if not h.is_sip4d_guests_ban() or c.userobj %}
+{% if h.is_sip4d_guests_ban() or c.userobj %}
   {# if request.path != home_url #}
   {% if c.userobj.sysadmin %}
     {% set sip4d_authorized = h.check_access('sip4d_issysadmin') %}
@@ -50,9 +50,9 @@
         {% endblock %}
       </div>
     </div>
-    <div class="row">
-      <h2 style="text-align:center;">Copyright © {{ _('National Research Institute for Earth Science and Disaster Resilience') }}</h2>
-    </div>
+<!--    <div class="row">-->
+<!--      <h2 style="text-align:center;">Copyright © {{ _('National Research Institute for Earth Science and Disaster Resilience') }}</h2>-->
+<!--    </div>-->
     {% endblock %}
   </div>
 </footer>

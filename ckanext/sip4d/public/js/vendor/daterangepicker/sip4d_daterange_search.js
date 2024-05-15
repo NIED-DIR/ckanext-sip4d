@@ -47,6 +47,7 @@ this.ckan.module('sip4ddaterange_search', function ($, _) {
             var lang = this.el.data('lang');
 
             var form = $(".search-form");
+            // データセットの日時検索を行う
             if ($("#ext_startdate").length === 0) {
                 $('<input type="hidden" id="ext_startdate" name="ext_startdate" />').appendTo(form);
             }
@@ -56,6 +57,7 @@ this.ckan.module('sip4ddaterange_search', function ($, _) {
             if ($("#ext_limit").length === 0) {
                 $('<input type="hidden" id="ext_limit" name="limit" />').appendTo(form);
             }
+            // 検索対象の日時情報 information_date:情報日時 metadata_modified:更新日時 search_type_created:作成日時
             if ($("#ext_search_date_type").length === 0) {
                 $('<input type="hidden" id="ext_search_date_type" name="ext_search_date_type" />').appendTo(form);
             }
@@ -86,7 +88,7 @@ this.ckan.module('sip4ddaterange_search', function ($, _) {
                 $('#ext_search_date_type').val(ext_search_date_type);
                 $('input:radio[name="sip4d_search_type_radio"]').val([ext_search_date_type]);
             }
-
+            // localeに合わせて言語を設定
             var datelocation = module.options.en;
             if ('ja'===lang) {
                 datelocation = module.options.ja;
@@ -123,7 +125,7 @@ this.ckan.module('sip4ddaterange_search', function ($, _) {
             function getURLParameter(name) {
                 return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
             }
-            // ajax button
+            // イベント設定
             $('#disaster_id_update').on('click', function(e) {
                 this.disabled = true;
                 var result = module.updateDisasterInfo('disaster_id', module._('disaster_id'));
@@ -150,6 +152,9 @@ this.ckan.module('sip4ddaterange_search', function ($, _) {
             });
         },
 
+        /**
+        選択したデータセットの災害ID,災害名を一括で更新する。
+         */
         updateDisasterInfo: function(type, typename)
         {
             var self = this;
@@ -160,6 +165,8 @@ this.ckan.module('sip4ddaterange_search', function ($, _) {
                 if (!confirm( this._('%(name)s value is empty. Do you want to update?', {name: typename}) )) return false;
             }
             this.showLoading(this._('Updating %(name)s', {name: typename}));
+            // CSRF対策
+            var csrf_value = $('meta[name=_csrf_token]').attr('content');
 
             let typevalue = $('[name="'+type+'"]').val();
             let dataset_ids = [];
@@ -171,14 +178,14 @@ this.ckan.module('sip4ddaterange_search', function ($, _) {
             postdata['dataset_ids'] = dataset_ids;
             jQuery.ajax({
                 type: 'post',
+                beforeSend: function (jqXHR, settings) { {
+                    if (csrf_value)
+                        jqXHR.setRequestHeader('X-CSRFToken', csrf_value);
+                } },
                 url : url,
                 data: JSON.stringify(postdata),  //form.serialize(),
                 dataType : "json",
                 contentType: 'application/json',
-//                headers: {
-//                    'X-HTTP-Method-Override': 'POST',
-//                    'Content-Type': 'application/json'
-//                },
                 success: function (results) {
                     console.log(results)
                     if (results.success) {
@@ -200,6 +207,9 @@ this.ckan.module('sip4ddaterange_search', function ($, _) {
             });
             return true;
         },
+        /**
+        更新中に画面を操作できないようにローディング画面を表示
+         */
         showLoading : function(msg)
         {
             if (typeof msg === "undefined") {
@@ -210,6 +220,9 @@ this.ckan.module('sip4ddaterange_search', function ($, _) {
                 $("body").append("<div id='loading'>" + showMsg + "</div>");
             }
         },
+        /**
+        ローディング画面を非表示
+         */
         removeLoading : function(type)
         {
             if ($("#loading")) {

@@ -13,6 +13,7 @@ from ckan.lib.navl.validators import ignore_missing, ignore
 
 from ckanext.harvest.harvesters.base import HarvesterBase
 from ckanext.harvest.model import HarvestObject
+from ckanext.harvest.logic.schema import unicode_safe
 
 import logging
 
@@ -31,38 +32,24 @@ class Sip4DHarvesterBase(HarvesterBase):
         return extra.value
     return None
 
-  def _sip4d_create_or_update_package(self, package_dict, harvest_object,
-                                      package_dict_form='rest'):
+  def _sip4d_create_or_update_package(self, status, package_dict, harvest_object):
     '''
-        ckanext-harvesterの_create_or_update_packageをベースにstateの状態がdeleteのパッケージ更新時にstateをactiveにして更新を行うように改修
-        harveste_objectの保存時にcontentを空にして保存するように改修
+        データセットの新規登録、更新を行う。
+        :param status: create 新規登録、 update 更新
         :param package_dict:
         :param harvest_object:
-        :param package_dict_form:
         :return:
     '''
-    assert package_dict_form in ('rest', 'package_show')
     try:
-      # Change default schema
-      schema = default_create_package_schema()
-      schema['id'] = [ignore_missing, six.text_type]  # unicode
-      schema['__junk'] = [ignore]
-
-      # Check API version
-      if self.config:
-        try:
-          api_version = int(self.config.get('api_version', 2))
-        except ValueError:
-          raise ValueError('api_version must be an integer')
-      else:
-        api_version = 2
-
+      # context
       user_name = self._get_user_name()
+      schema = default_create_package_schema()
+      schema['id'] = [ignore_missing, unicode_safe]
       context = {
         'model': model,
-        'session': Session,
+        'session': model.Session,
         'user': user_name,
-        'api_version': api_version,
+        'api_version': 2,
         'schema': schema,
         'ignore_auth': True,
       }
@@ -71,116 +58,71 @@ class Sip4DHarvesterBase(HarvesterBase):
         tags = package_dict.get('tags', [])
         package_dict['tags'] = self._clean_tags(tags)
 
-      # Check if package exists
-      try:
-        previous_object = model.Session.query(HarvestObject) \
-          .filter(HarvestObject.guid == harvest_object.guid) \
-          .filter(HarvestObject.current is True) \
-          .first()
+      context.update({
+        # 'extras_as_string': True,
+        'return_id_only': True})
 
-        # mod previous_object
-        if previous_object and not self.force_import:
-          previous_object.current = False
-          previous_object.save()
-
-        # _find_existing_package can be overridden if necessary
-        existing_package_dict = self._find_existing_package(package_dict)
-
-        # In case name has been modified when first importing. See issue #101.
-        package_dict['name'] = existing_package_dict['name']
-
-        log.info('existing_package_dict state %s' % existing_package_dict['state'])
-
-        # Check modified date
-        if 'metadata_modified' not in package_dict or \
-                package_dict['metadata_modified'] > existing_package_dict.get('metadata_modified'):
-          log.info('Package with GUID %s exists and needs to be updated' % harvest_object.guid)
-          # Update package
-          context.update({'id': package_dict['id']})
-          package_dict.setdefault('name',
-                                  existing_package_dict['name'])
-
-          for field in p.toolkit.aslist(self.config.get('ckan.harvest.not_overwrite_fields')):
-            if field in existing_package_dict:
-              package_dict[field] = existing_package_dict[field]
-
-          # mod
-          package_dict['state'] = 'active'
-
-          new_package = p.toolkit.get_action(
-            'package_update' if package_dict_form == 'package_show'
-            else 'package_update_rest')(context, package_dict)
-        # mod
-        elif 'state' in existing_package_dict and existing_package_dict['state'] == 'deleted':
-          # Update package
-          context.update({'id': package_dict['id']})
-          package_dict.setdefault('name',
-                                  existing_package_dict['name'])
-          package_dict['state'] = 'active'
-
-          new_package = p.toolkit.get_action(
-            'package_update' if package_dict_form == 'package_show'
-            else 'package_update_rest')(context, package_dict)
-        else:
-          harvest_object.package_id = package_dict['id']
-          harvest_object.current = True
-          # harvest_object.content = ''
-          harvest_object.save()
-
-          log.info('No changes to package with GUID %s, skipping...' % harvest_object.guid)
-          # NB harvest_object.current/package_id are not set
-          return 'unchanged'
-
-        # Flag this as the current harvest object
-        harvest_object.package_id = new_package['id']
-        harvest_object.current = True
-        # mod contentは保存しない
-        harvest_object.content = ''
-        harvest_object.save()
-
-      except p.toolkit.ObjectNotFound:
-        # Package needs to be created
-
-        # Get rid of auth audit on the context otherwise we'll get an
-        # exception
-        context.pop('__auth_audit', None)
-
-        # Set name for new package to prevent name conflict, see issue #117
-        if package_dict.get('name', None):
-          package_dict['name'] = self._gen_new_name(package_dict['name'])
-        else:
-          package_dict['name'] = self._gen_new_name(package_dict['title'])
-
+      if status == 'create':
         log.info('Package with GUID %s does not exist, let\'s create it' % harvest_object.guid)
         harvest_object.current = True
         harvest_object.package_id = package_dict['id']
-        # mod
-        # harvest_object.content = ''
-        # Defer constraints and flush so the dataset can be indexed with
-        # the harvest object id (on the after_show hook from the harvester
-        # plugin)
         harvest_object.add()
 
         model.Session.execute('SET CONSTRAINTS harvest_object_package_id_fkey DEFERRED')
         model.Session.flush()
 
-        new_package = p.toolkit.get_action(
-          'package_create' if package_dict_form == 'package_show'
-          else 'package_create_rest')(context, package_dict)
-      finally:
-        Session.commit()
+        package_id = p.toolkit.get_action('package_create')(context, package_dict)
+        log.info('Created new package %s with guid %s', package_id, harvest_object.guid)
 
-      return True
+        result = True
+
+      elif status == 'update':
+        log.info('Package with GUID %s exists and needs to be updated' % harvest_object.guid)
+        # Update package
+        context.update({'id': package_dict['id']})
+        # nameが存在しない場合idを設定
+        package_dict.setdefault('name', package_dict['id'])
+
+        for field in p.toolkit.aslist(self.config.get('ckan.harvest.not_overwrite_fields')):
+          if field in existing_package_dict:
+            package_dict[field] = existing_package_dict[field]
+        package_id = p.toolkit.get_action('package_update')(context, package_dict)
+
+        log.info('Updated package %s with guid %s', package_id, harvest_object.guid)
+
+        # Flag the other objects linking to this package as not current anymore
+        from ckanext.harvest.model import harvest_object_table
+        conn = model.Session.connection()
+        u = update(harvest_object_table) \
+          .where(harvest_object_table.c.package_id == bindparam('b_package_id')) \
+          .values(current=False)
+        conn.execute(u, b_package_id=package_id)
+
+        # Flag this as the current harvest object
+
+        harvest_object.package_id = package_id
+        harvest_object.current = True
+        harvest_object.save()
+
+        result = True
+
+      else:
+        log.info('Create or Updated package nochange Status %s , package_id %s', status, package_dict['id'])
+        result = None
+
+      model.Session.commit()
 
     except p.toolkit.ValidationError as e:
       log.exception(e)
       self._save_object_error('Invalid package with GUID %s: %r' % (harvest_object.guid, e.error_dict),
                               harvest_object, 'Import')
+      return False
     except Exception as e:
       log.exception(e)
       self._save_object_error('%r' % e, harvest_object, 'Import')
+      return False
 
-    return None
+    return result
 
 
 class AESCipher(object):
