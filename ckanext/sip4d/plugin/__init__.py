@@ -63,7 +63,7 @@ class Sip4DDataViewPlugin(Sip4DMixinPlugin, p.SingletonPlugin, tk.DefaultDataset
         extension_module_name = '.'.join(self.__module__.split('.')[0:2])
         module = sys.modules[extension_module_name]
         path = os.path.join(os.path.dirname(module.__file__), 'i18n')
-        print("sip4d i18n_directory : %s" % path)
+        log.debug("sip4d i18n_directory : %s", path)
         return os.path.join(os.path.dirname(module.__file__), 'i18n')
 
     def i18n_locales(self):
