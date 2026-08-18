@@ -295,7 +295,7 @@ class Sip4DDataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm, DefaultTranslati
                             data_dict['extras'].append(extraitem)
         return tk.navl_validate(data_dict, schema, context)
 
-    def before_search(self, search_params):
+    def _before_dataset_search_common(self, search_params):
         # log.debug('call before_search')
         # if 'q' in search_params:
         #     search_params['q'] = html.escape(search_params['q'])
@@ -310,9 +310,20 @@ class Sip4DDataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm, DefaultTranslati
         utc_end_date = sip4d_helpers.get_utcdatetime(end_date)
         # search params
         if start_date and end_date and len(start_date) > 0 and len(end_date) > 0:
-            fq = search_params['fq']
-            fq = '{fq} +information_date:[{start_date} TO {end_date}]'.format(
-                fq=fq, start_date=utc_start_date, end_date=utc_end_date)
+            fq = search_params.get('fq', '')
+            if fq:
+                fq = '{fq} +information_date:[{start_date} TO {end_date}]'.format(
+                    fq=fq, start_date=utc_start_date, end_date=utc_end_date)
+            else:
+                fq = 'information_date:[{start_date} TO {end_date}]'.format(
+                    start_date=utc_start_date, end_date=utc_end_date)
             search_params['fq'] = fq
 
         return search_params
+
+    def before_dataset_search(self, search_params):
+        return self._before_dataset_search_common(search_params)
+
+    def before_search(self, search_params):
+        return self._before_dataset_search_common(search_params)
+
